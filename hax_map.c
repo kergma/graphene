@@ -14,3 +14,8 @@ Map *new_Map(void)
 	if (!map) error_exit("out of memory");
 	return map;
 }
+
+void free_Map(Map *map)
+{
+	free(map);
+}
