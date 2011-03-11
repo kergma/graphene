@@ -105,77 +105,6 @@ reshape_hax (ModeInfo *mi, int width, int height)
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
-
-static void
-randomize_spikes (ModeInfo *mi)
-{
-  ball_configuration *bp = &bps[MI_SCREEN(mi)];
-  int i;
-  bp->pos = 0;
-  for (i = 0; i < MI_COUNT(mi); i++)
-    {
-      bp->spikes[i*2]   = (random() % 360) - 180;
-      bp->spikes[i*2+1] = (random() % 180) - 90;
-    }
-
-# define ROT_SCALE 22
-  for (i = 0; i < MI_COUNT(mi) * 2; i++)
-    bp->spikes[i] = (bp->spikes[i] / ROT_SCALE) * ROT_SCALE;
-
-  if ((random() % 3) == 0)
-    bp->color_shift = random() % (bp->ncolors / 2);
-  else
-    bp->color_shift = 0;
-}
-
-static void
-draw_spikes (ModeInfo *mi)
-{
-  ball_configuration *bp = &bps[MI_SCREEN(mi)];
-  GLfloat diam = 0.2;
-  GLfloat pos = bp->pos;
-  int i;
-
-  if (pos < 0) pos = -pos;
-
-  pos = (asin (0.5 + pos/2) - 0.5) * 2;
-
-  for (i = 0; i < MI_COUNT(mi); i++)
-    {
-      glPushMatrix();
-      glRotatef(bp->spikes[i*2],   0, 1, 0);
-      glRotatef(bp->spikes[i*2+1], 0, 0, 1);
-      glTranslatef(0.7, 0, 0);
-      glRotatef(-90, 0, 0, 1);
-      glScalef (diam, pos, diam);
-      glCallList (bp->spike_list);
-      glPopMatrix();
-
-      mi->polygon_count += (SPIKE_FACES + 1);
-    }
-}
-
-
-static void
-move_spikes (ModeInfo *mi)
-{
-  ball_configuration *bp = &bps[MI_SCREEN(mi)];
-
-  if (bp->pos >= 0)		/* moving outward */
-    {
-      bp->pos += speed;
-      if (bp->pos >= 1)		/*  reverse gears at apex */
-        bp->pos = -1;
-    }
-  else				/* moving inward */
-    {
-      bp->pos += speed;
-      if (bp->pos >= 0)		/*  stop at end */
-        randomize_spikes (mi);
-    }
-}
-
-
 ENTRYPOINT Bool
 hax_handle_event (ModeInfo *mi, XEvent *event)
 {
@@ -293,7 +222,6 @@ init_hax (ModeInfo *mi)
         1, 0, SPIKE_FACES, SMOOTH_SPIKES, False, wire);
   glEndList ();
 
-  randomize_spikes (mi);
 }
 
 
