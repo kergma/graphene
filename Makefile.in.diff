@@ -1,5 +1,5 @@
 --- Makefile.in.orig	2011-03-11 23:28:01.000000000 +0700
-+++ Makefile.in	2011-03-12 01:32:57.000000000 +0700
++++ Makefile.in	2011-03-12 01:40:16.000000000 +0700
 @@ -85,7 +85,8 @@
  		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
@@ -29,7 +29,7 @@
  		  sballs cubenetic spheremonics lavalite queens \
  		  endgame glblur flurry atunnel flyingtoasters bouncingcow \
  		  glslideshow jigglypuff klein hypertorus glmatrix cubestorm \
-@@ -189,6 +191,7 @@
+@@ -189,11 +191,12 @@
  		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
@@ -37,6 +37,12 @@
  		  involute.h teapot.h sonar.h dropshadow.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
  		  cubenetic.man dangerball.man engine.man extrusion.man \
+ 		  flipscreen3d.man gears.man gflux.man \
+-		  glplanet.man glsnake.man gltext.man lament.man lavalite.man \
++		  glplanet.man glsnake.man gltext.man hax.man lament.man lavalite.man \
+ 		  menger.man moebius.man molecule.man morph3d.man pipes.man \
+ 		  pulsar.man queens.man rubik.man sballs.man sierpinski3d.man \
+ 		  spheremonics.man sproingies.man stairs.man starwars.man \
 @@ -567,6 +570,10 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
