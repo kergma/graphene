@@ -25,6 +25,7 @@
 #include "tube.h"
 #include "rotator.h"
 #include "gltrackball.h"
+#include "hax_scene.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
@@ -322,26 +323,14 @@ draw_hax (ModeInfo *mi)
   glEnable(GL_NORMALIZE);
   glEnable(GL_CULL_FACE);
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.5f,0.5f,0.5f,1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
   glPushMatrix ();
 
   glScalef(1.1, 1.1, 1.1);
 
-  {
-    double x, y, z;
-    get_position (bp->rot, &x, &y, &z, !bp->button_down_p);
-    glTranslatef((x - 0.5) * 8,
-                 (y - 0.5) * 8,
-                 (z - 0.5) * 15);
-
-    gltrackball_rotate (bp->trackball);
-
-    get_rotation (bp->rot, &x, &y, &z, !bp->button_down_p);
-    glRotatef (x * 360, 1.0, 0.0, 0.0);
-    glRotatef (y * 360, 0.0, 1.0, 0.0);
-    glRotatef (z * 360, 0.0, 0.0, 1.0);
-  }
 
   bcolor[0] = bp->colors[bp->ccolor].red   / 65536.0;
   bcolor[1] = bp->colors[bp->ccolor].green / 65536.0;
@@ -359,19 +348,19 @@ draw_hax (ModeInfo *mi)
 
   glScalef (2.0, 2.0, 2.0);
 
-  move_spikes (mi);
 
   glMaterialfv (GL_FRONT, GL_SPECULAR,            bspec);
   glMateriali  (GL_FRONT, GL_SHININESS,           bshiny);
   glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, bcolor);
-  glCallList (bp->ball_list);
   mi->polygon_count += (SPHERE_SLICES * SPHERE_STACKS);
 
   glMaterialfv (GL_FRONT, GL_SPECULAR,            sspec);
   glMaterialf  (GL_FRONT, GL_SHININESS,           sshiny);
   glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, scolor);
-  draw_spikes (mi);
   glPopMatrix ();
+
+	scene_render();
+	
 
   if (mi->fps_p) do_fps (mi);
   glFinish();
@@ -379,6 +368,6 @@ draw_hax (ModeInfo *mi)
   glXSwapBuffers(dpy, window);
 }
 
-XSCREENSAVER_MODULE_2 ("Hax", hax, hax)
+XSCREENSAVER_MODULE ("Hax", hax)
 
 #endif /* USE_GL */
