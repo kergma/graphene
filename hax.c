@@ -101,6 +101,7 @@ reshape_hax (ModeInfo *mi, int width, int height)
              0.0, 0.0, 0.0,
              0.0, 1.0, 0.0);
 
+  camera_render();
   glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -327,9 +328,9 @@ draw_hax (ModeInfo *mi)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-  glPushMatrix ();
+  /*glPushMatrix ();*/
 
-  glScalef(1.1, 1.1, 1.1);
+  /*glScalef(1.1, 1.1, 1.1);*/
 
 
   bcolor[0] = bp->colors[bp->ccolor].red   / 65536.0;
@@ -346,7 +347,7 @@ draw_hax (ModeInfo *mi)
 
   mi->polygon_count = 0;
 
-  glScalef (2.0, 2.0, 2.0);
+  /*glScalef (2.0, 2.0, 2.0);*/
 
 
   glMaterialfv (GL_FRONT, GL_SPECULAR,            bspec);
@@ -357,7 +358,7 @@ draw_hax (ModeInfo *mi)
   glMaterialfv (GL_FRONT, GL_SPECULAR,            sspec);
   glMaterialf  (GL_FRONT, GL_SHININESS,           sshiny);
   glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, scolor);
-  glPopMatrix ();
+  /*glPopMatrix ();*/
 
 	scene_render();
 	

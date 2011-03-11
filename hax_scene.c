@@ -9,9 +9,11 @@
 #endif
 
 #include "hax_scene.h"
+#include "hax_camera.h"
 
 int scene_render(void)
 {
+	camera_render();
 
 	glBegin(GL_LINES);
 	glColor3f(1.0f,0,0);
