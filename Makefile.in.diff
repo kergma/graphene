@@ -1,12 +1,12 @@
 --- Makefile.in.orig	2011-03-11 23:28:01.000000000 +0700
-+++ Makefile.in	2011-03-11 23:54:02.000000000 +0700
++++ Makefile.in	2011-03-12 01:32:57.000000000 +0700
 @@ -85,7 +85,8 @@
  		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
  		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
 -		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
 +		  extrusion-taper.c extrusion-twistoid.c hax.c hax_scene.c \
-+		  hax_camera.c sierpinski3d.c \
++		  hax_camera.c hax_grid.c hax_util.c sierpinski3d.c \
  		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
  		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
  		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
@@ -16,7 +16,7 @@
  		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
 -		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
 +		  extrusion-taper.o extrusion-twistoid.o hax.o hax_scene.o \
-+		  hax_camera.o sierpinski3d.o \
++		  hax_camera.o hax_grid.o hax_util.o sierpinski3d.o \
  		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
  		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
  		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
@@ -33,7 +33,7 @@
  		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
-+		  hax_scene.h hax_camera.h \
++		  hax_scene.h hax_camera.h hax_grid.h hax_util.h \
  		  involute.h teapot.h sonar.h dropshadow.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
  		  cubenetic.man dangerball.man engine.man extrusion.man \
@@ -41,14 +41,14 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
  
-+HAX_OBJS=sphere.o tube.o hax_scene.o hax_camera.o $(HACK_TRACK_OBJS)
++HAX_OBJS=sphere.o tube.o hax_scene.o hax_camera.o hax_grid.o hax_util.o $(HACK_TRACK_OBJS)
 +hax:	hax.o	$(HAX_OBJS)
 +	$(CC_HACK) -o $@ $@.o	$(HAX_OBJS) $(HACK_LIBS)
 +
  circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
  	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
  
-@@ -1119,6 +1126,25 @@
+@@ -1119,6 +1126,27 @@
  cubicgrid.o: $(UTILS_SRC)/yarandom.h
  cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
  cubicgrid.o: $(HACK_SRC)/xlockmore.h
@@ -61,6 +61,8 @@
 +hax.o: $(srcdir)/tube.h
 +hax.o: $(srcdir)/hax_scene.h
 +hax.o: $(srcdir)/hax_camera.h
++hax.o: $(srcdir)/hax_grid.h
++hax.o: $(srcdir)/hax_util.h
 +hax.o: $(UTILS_SRC)/colors.h
 +hax.o: $(UTILS_SRC)/grabscreen.h
 +hax.o: $(UTILS_SRC)/hsv.h

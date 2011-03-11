@@ -3,7 +3,7 @@
 #endif
 
 #ifdef HAVE_COCOA
-# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
 #else
 # include <GL/glu.h>
 #endif

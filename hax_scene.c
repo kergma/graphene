@@ -10,21 +10,12 @@
 
 #include "hax_scene.h"
 #include "hax_camera.h"
+#include "hax_grid.h"
 
 int scene_render(void)
 {
 	camera_render();
+	grid_render();
 
-	glBegin(GL_LINES);
-	glColor3f(1.0f,0,0);
-	glVertex3f(0.0f,0.0f,0.0f);
-	glVertex3f(1.0f,0.0f,0.0f);
-	glColor3f(0,1.0f,0);
-	glVertex3f(0.0f,0.0f,0.0f);
-	glVertex3f(0.0f,1.0f,0.0f);
-	glColor3f(0,0,1.0f);
-	glVertex3f(0.0f,0.0f,0.0f);
-	glVertex3f(0.0f,0.0f,1.0f);
-	glEnd();
 	return 0;
 }
