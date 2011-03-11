@@ -186,6 +186,7 @@ init_hax (ModeInfo *mi)
       glLightfv(GL_LIGHT0, GL_DIFFUSE,  dif);
       glLightfv(GL_LIGHT0, GL_SPECULAR, spc);
     }
+	glEnable(GL_COLOR_MATERIAL);
 
   {
     double spin_speed   = 10.0;
@@ -278,15 +279,6 @@ draw_hax (ModeInfo *mi)
   /*glScalef (2.0, 2.0, 2.0);*/
 
 
-  glMaterialfv (GL_FRONT, GL_SPECULAR,            bspec);
-  glMateriali  (GL_FRONT, GL_SHININESS,           bshiny);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, bcolor);
-  mi->polygon_count += (SPHERE_SLICES * SPHERE_STACKS);
-
-  glMaterialfv (GL_FRONT, GL_SPECULAR,            sspec);
-  glMaterialf  (GL_FRONT, GL_SHININESS,           sshiny);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, scolor);
-  /*glPopMatrix ();*/
 
 	scene_render();
 	

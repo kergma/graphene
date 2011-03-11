@@ -9,6 +9,7 @@
 #endif
 
 #include "hax_grid.h"
+#include "hax_map.h"
 
 int grid_render(void)
 {
