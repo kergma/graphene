@@ -1,0 +1,63 @@
+--- Makefile.in.orig	2011-03-11 22:51:44.000000000 +0700
++++ Makefile.in	2011-03-10 01:20:30.000000000 +0700
+@@ -85,7 +85,7 @@
+ 		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
+ 		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
+ 		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
+-		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
++		  extrusion-taper.c extrusion-twistoid.c hax.c sierpinski3d.c \
+ 		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
+ 		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
+ 		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
+@@ -121,7 +121,7 @@
+ 		  xlock-gl-utils.o xpm-ximage.o glplanet.o pulsar.o \
+ 		  extrusion.o extrusion-helix2.o extrusion-helix3.o \
+ 		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
+-		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
++		  extrusion-taper.o extrusion-twistoid.o hax.o sierpinski3d.o \
+ 		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
+ 		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
+ 		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
+@@ -151,7 +151,7 @@
+ GL_EXES		= cage gears moebius pipes sproingies stairs superquadrics \
+ 		  morph3d rubik atlantis lament bubble3d glplanet pulsar \
+ 		  sierpinski3d gflux stonerview starwars gltext molecule \
+-		  dangerball circuit menger engine flipscreen3d glsnake boxed \
++		  dangerball hax circuit menger engine flipscreen3d glsnake boxed \
+ 		  sballs cubenetic spheremonics lavalite queens \
+ 		  endgame glblur flurry atunnel flyingtoasters bouncingcow \
+ 		  glslideshow jigglypuff klein hypertorus glmatrix cubestorm \
+@@ -567,6 +567,9 @@
+ dangerball:	dangerball.o	$(DB_OBJS)
+ 	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
+ 
++hax:	hax.o	$(DB_OBJS)
++	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
++
+ circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
+ 	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
+ 
+@@ -1119,6 +1122,23 @@
+ cubicgrid.o: $(UTILS_SRC)/yarandom.h
+ cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
+ cubicgrid.o: $(HACK_SRC)/xlockmore.h
++hax.o: ../../config.h
++hax.o: $(HACK_SRC)/fps.h
++hax.o: $(srcdir)/gltrackball.h
++hax.o: $(srcdir)/rotator.h
++hax.o: $(HACK_SRC)/screenhackI.h
++hax.o: $(srcdir)/sphere.h
++hax.o: $(srcdir)/tube.h
++hax.o: $(UTILS_SRC)/colors.h
++hax.o: $(UTILS_SRC)/grabscreen.h
++hax.o: $(UTILS_SRC)/hsv.h
++hax.o: $(UTILS_SRC)/resources.h
++hax.o: $(UTILS_SRC)/usleep.h
++hax.o: $(UTILS_SRC)/visual.h
++hax.o: $(UTILS_SRC)/xshm.h
++hax.o: $(UTILS_SRC)/yarandom.h
++hax.o: $(HACK_SRC)/xlockmoreI.h
++hax.o: $(HACK_SRC)/xlockmore.h
+ dangerball.o: ../../config.h
+ dangerball.o: $(HACK_SRC)/fps.h
+ dangerball.o: $(srcdir)/gltrackball.h
