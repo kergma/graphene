@@ -1,6 +1,6 @@
---- Makefile.in.orig	2011-03-11 23:28:01.000000000 +0700
-+++ Makefile.in	2011-03-12 02:05:17.000000000 +0700
-@@ -85,7 +85,8 @@
+--- Makefile.in.orig	2013-02-05 14:38:20.000000000 +0800
++++ Makefile.in	2013-07-03 16:45:38.000000000 +0800
+@@ -88,7 +88,8 @@
  		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
  		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
@@ -10,7 +10,7 @@
  		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
  		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
  		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
-@@ -121,7 +122,8 @@
+@@ -127,7 +128,8 @@
  		  xlock-gl-utils.o xpm-ximage.o glplanet.o pulsar.o \
  		  extrusion.o extrusion-helix2.o extrusion-helix3.o \
  		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
@@ -20,7 +20,7 @@
  		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
  		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
  		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
-@@ -151,7 +153,7 @@
+@@ -160,7 +162,7 @@
  GL_EXES		= cage gears moebius pipes sproingies stairs superquadrics \
  		  morph3d rubik atlantis lament bubble3d glplanet pulsar \
  		  sierpinski3d gflux stonerview starwars gltext molecule \
@@ -29,12 +29,13 @@
  		  sballs cubenetic spheremonics lavalite queens \
  		  endgame glblur flurry atunnel flyingtoasters bouncingcow \
  		  glslideshow jigglypuff klein hypertorus glmatrix cubestorm \
-@@ -189,11 +191,12 @@
+@@ -202,12 +204,13 @@
  		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
 +		  hax_scene.h hax_camera.h hax_grid.h hax_util.h hax_map.h \
- 		  involute.h teapot.h sonar.h dropshadow.h
+ 		  involute.h teapot.h sonar.h dropshadow.h starwars.h \
+ 		  jwzgles.h jwzglesI.h teapot2.h dnapizza.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
  		  cubenetic.man dangerball.man engine.man extrusion.man \
  		  flipscreen3d.man gears.man gflux.man \
@@ -43,7 +44,7 @@
  		  menger.man moebius.man molecule.man morph3d.man pipes.man \
  		  pulsar.man queens.man rubik.man sballs.man sierpinski3d.man \
  		  spheremonics.man sproingies.man stairs.man starwars.man \
-@@ -567,6 +570,10 @@
+@@ -588,6 +591,10 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
  
@@ -54,7 +55,7 @@
  circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
  	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
  
-@@ -1119,6 +1126,28 @@
+@@ -1262,6 +1269,28 @@
  cubicgrid.o: $(UTILS_SRC)/yarandom.h
  cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
  cubicgrid.o: $(HACK_SRC)/xlockmore.h
