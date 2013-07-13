@@ -153,6 +153,8 @@ init_hax (ModeInfo *mi)
 {
   ball_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
+	printf("here init_hax\n");
+ 	scene_create();
 
   if (!bps) {
     bps = (ball_configuration *)
@@ -287,6 +289,12 @@ draw_hax (ModeInfo *mi)
   glFinish();
 
   glXSwapBuffers(dpy, window);
+}
+
+ENTRYPOINT void free_hax (void)
+{
+	printf("here free_hax\n");
+	scene_free();
 }
 
 XSCREENSAVER_MODULE ("Hax", hax)

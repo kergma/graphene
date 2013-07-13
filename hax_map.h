@@ -16,7 +16,8 @@ typedef struct tagMap {
 	LPMapCell *cells;
 } Map;
 
-Map *new_Map(void);
-void free_Map(Map *map);
+Map *map_new(void);
+void map_free(Map *map);
 
 #endif /* HAX_MAP_H */
+
