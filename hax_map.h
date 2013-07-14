@@ -1,4 +1,5 @@
 #ifndef HAX_MAP_H
+#include "hax_util.h"
 
 typedef struct tagHEXCOORD {
 	int u,v,f;
@@ -16,8 +17,9 @@ typedef struct tagMap {
 	LPMapCell *cells;
 } Map;
 
-Map *map_new(void);
+Map *map_create(void);
 void map_free(Map *map);
 
+#define HAX_MAP_H
 #endif /* HAX_MAP_H */
 

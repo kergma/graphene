@@ -13,17 +13,18 @@
 #include "hax_camera.h"
 #include "hax_grid.h"
 
-Map *map=NULL;
-
-
-int scene_create(void)
+Scene *scene_create(void)
 {
-	if (map) map_free(map);
-	map=map_new();
-	return 0;
+	Scene *s=(Scene*)calloc(1,sizeof(Scene*));
+	if (!s) error_exit("out of memory");
+
+	s->map=map_create();
+	s->grid=grid_create(s->map,1.0);
+
+	return s;
 }
 
-int scene_render(void)
+int scene_render(Scene *s)
 {
 	camera_render();
 	grid_render();
@@ -31,9 +32,10 @@ int scene_render(void)
 	return 0;
 }
 
-int scene_free(void)
+int scene_free(Scene *s)
 {
-	if (map) map_free(map);
-	map=NULL;
+	grid_free(s->grid);
+	map_free(s->map);
+	free(s);
 	return 0;
 }

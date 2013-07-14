@@ -39,4 +39,5 @@ typedef struct tagGRID_VERTEX {
 
 void error_exit(const char *message);
 
+#define HAX_UTIL_H
 #endif /* HAX_UTIL_H */

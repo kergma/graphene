@@ -8,6 +8,7 @@
 # include <GL/gl.h>
 #endif
 
+#include <stdlib.h>
 #include "hax_grid.h"
 #include "hax_map.h"
 
@@ -24,6 +25,25 @@ int grid_render(void)
 	glVertex3f(0.0f,0.0f,0.0f);
 	glVertex3f(0.0f,0.0f,1.0f);
 	glEnd();
+	return 0;
+}
+
+Grid *grid_create(Map *map, float cell_size)
+{
+	Grid *grid=(Grid*)calloc(1,sizeof(Grid*));
+	if (!grid) error_exit("out of memory");
+
+	grid->map=map;
+	grid->cell_size=cell_size;
+
+	return grid;
+
+
+}
+
+int grid_free(Grid *grid)
+{
+	free(grid);
 	return 0;
 }
 

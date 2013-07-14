@@ -1,6 +1,15 @@
 #ifndef HAX_SCENE_H
-extern int scene_render(void);
-extern int scene_create(void);
-extern int scene_free(void);
+#include "hax_map.h"
+#include "hax_grid.h"
+typedef struct tagScene
+{
+	Map *map;
+	Grid *grid;
+} Scene;
 
+int scene_render(Scene *s);
+Scene *scene_create(void);
+int scene_free(Scene *s);
+
+#define HAX_SCENE_H
 #endif /* HAX_SCENE_H */

@@ -26,6 +26,7 @@
 #include "rotator.h"
 #include "gltrackball.h"
 #include "hax_scene.h"
+#include "hax_camera.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
@@ -40,6 +41,8 @@
 #define SPHERE_SLICES 32  /* how densely to render spheres */
 #define SPHERE_STACKS 16
 
+
+Scene *scene=NULL;
 typedef struct {
   GLXContext *glx_context;
   rotator *rot;
@@ -154,7 +157,7 @@ init_hax (ModeInfo *mi)
   ball_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
 	printf("here init_hax\n");
- 	scene_create();
+ 	scene=scene_create();
 
   if (!bps) {
     bps = (ball_configuration *)
@@ -282,7 +285,7 @@ draw_hax (ModeInfo *mi)
 
 
 
-	scene_render();
+	scene_render(scene);
 	
 
   if (mi->fps_p) do_fps (mi);
@@ -294,7 +297,7 @@ draw_hax (ModeInfo *mi)
 ENTRYPOINT void free_hax (void)
 {
 	printf("here free_hax\n");
-	scene_free();
+	scene_free(scene);
 }
 
 XSCREENSAVER_MODULE ("Hax", hax)
