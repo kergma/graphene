@@ -52,7 +52,16 @@ void array_grow(Array *a)
 unsigned int array_add(Array *a, void *item)
 {
 	if (a->count>=a->size) array_grow(a);
-	memcpy(a->data+a->count,item,a->item_size);
+	memcpy(a->data+a->count*a->item_size,item,a->item_size);
 	a->count++;
+	return a->count;
+}
+
+void array_item(Array *a, unsigned int index, void *item)
+{
+	memcpy(item,a->data+index*a->item_size,a->item_size);
+}
+unsigned int array_count(Array *a)
+{
 	return a->count;
 }

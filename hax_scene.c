@@ -20,7 +20,7 @@ Scene *scene_create(void)
 	if (!s) error_exit("out of memory");
 
 	s->map=map_create();
-	map_create_hex(3);
+	map_create_hex(s->map,2);
 
 
 	s->grid=grid_create(s->map,1.0);

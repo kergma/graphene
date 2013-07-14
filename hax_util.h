@@ -57,6 +57,9 @@ void array_free(Array *a);
 void array_grow(Array *a);
 unsigned int array_add(Array *a, void *item);
 
+void array_item(Array *a, unsigned int index, void *item);
+unsigned int array_count(Array *a);
+
 
 #define HAX_UTIL_H
 #endif /* HAX_UTIL_H */
