@@ -9,16 +9,21 @@ typedef struct tagMapCell {
 	HEXCOORD Coord;
 /*	WORD Index; */
 	HEXAGON_EDGE *edges[6];
-} MapCell, *LPMapCell;		
+} MapCell;		
 
 extern HEXCOORD hex_direction[];
 
 typedef struct tagMap {
-	LPMapCell *cells;
+	Array *cells;
+	
 } Map;
 
 Map *map_create(void);
-void map_free(Map *map);
+void map_free(Map *m);
+
+void map_create_hex(int size);
+
+void map_add_cell(Map *m, MapCell *c);
 
 #define HAX_MAP_H
 #endif /* HAX_MAP_H */

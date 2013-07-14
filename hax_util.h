@@ -39,5 +39,24 @@ typedef struct tagGRID_VERTEX {
 
 void error_exit(const char *message);
 
+#define NEW(t) ((t*)calloc(1,sizeof(t)))
+
+typedef struct tagArray
+{
+	int count;
+	int size;
+	char *data;
+	int item_size;
+	int initial_size;
+	int growby_size;
+} Array;
+
+Array *array_create(int item_size);
+void array_reset(Array *a);
+void array_free(Array *a);
+void array_grow(Array *a);
+unsigned int array_add(Array *a, void *item);
+
+
 #define HAX_UTIL_H
 #endif /* HAX_UTIL_H */

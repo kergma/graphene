@@ -8,6 +8,7 @@
 # include <GL/gl.h>
 #endif
 
+#include <stdlib.h>
 #include "hax_scene.h"
 #include "hax_map.h"
 #include "hax_camera.h"
@@ -15,10 +16,13 @@
 
 Scene *scene_create(void)
 {
-	Scene *s=(Scene*)calloc(1,sizeof(Scene*));
+	Scene *s=NEW(Scene);
 	if (!s) error_exit("out of memory");
 
 	s->map=map_create();
+	map_create_hex(3);
+
+
 	s->grid=grid_create(s->map,1.0);
 
 	return s;

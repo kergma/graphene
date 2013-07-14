@@ -30,7 +30,7 @@ int grid_render(void)
 
 Grid *grid_create(Map *map, float cell_size)
 {
-	Grid *grid=(Grid*)calloc(1,sizeof(Grid*));
+	Grid *grid=NEW(Grid);
 	if (!grid) error_exit("out of memory");
 
 	grid->map=map;
