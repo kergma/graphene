@@ -237,15 +237,6 @@ draw_hax (ModeInfo *mi)
   ball_configuration *bp = &bps[MI_SCREEN(mi)];
   Display *dpy = MI_DISPLAY(mi);
   Window window = MI_WINDOW(mi);
-  int c2;
-
-  static const GLfloat bspec[4]  = {1.0, 1.0, 1.0, 1.0};
-  static const GLfloat sspec[4]  = {0.0, 0.0, 0.0, 1.0};
-  static const GLfloat bshiny    = 128.0;
-  static const GLfloat sshiny    = 0.0;
-
-  GLfloat bcolor[4] = {0.0, 0.0, 0.0, 1.0};
-  GLfloat scolor[4] = {0.0, 0.0, 0.0, 1.0};
 
   if (!bp->glx_context)
     return;
@@ -266,15 +257,6 @@ draw_hax (ModeInfo *mi)
 
   /*glScalef(1.1, 1.1, 1.1);*/
 
-
-  bcolor[0] = bp->colors[bp->ccolor].red   / 65536.0;
-  bcolor[1] = bp->colors[bp->ccolor].green / 65536.0;
-  bcolor[2] = bp->colors[bp->ccolor].blue  / 65536.0;
-
-  c2 = (bp->ccolor + bp->color_shift) % bp->ncolors;
-  scolor[0] = bp->colors[c2].red   / 65536.0;
-  scolor[1] = bp->colors[c2].green / 65536.0;
-  scolor[2] = bp->colors[c2].blue  / 65536.0;
 
   bp->ccolor++;
   if (bp->ccolor >= bp->ncolors) bp->ccolor = 0;
