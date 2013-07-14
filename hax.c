@@ -15,7 +15,6 @@
 			"*wireframe:    False       \n" \
 
 # define refresh_hax 0
-# define release_hax 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
@@ -156,7 +155,6 @@ init_hax (ModeInfo *mi)
 {
   ball_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
-	printf("here init_hax\n");
  	scene=scene_create();
 
   if (!bps) {
@@ -276,9 +274,8 @@ draw_hax (ModeInfo *mi)
   glXSwapBuffers(dpy, window);
 }
 
-ENTRYPOINT void free_hax (void)
+ENTRYPOINT void release_hax (ModeInfo *mi)
 {
-	printf("here free_hax\n");
 	scene_free(scene);
 }
 
