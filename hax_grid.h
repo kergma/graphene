@@ -6,6 +6,7 @@ typedef struct tagGrid
 {
 	Map *map;
 	float cell_size;
+	GLuint vertices;
 } Grid;
 
 extern int grid_render(void);

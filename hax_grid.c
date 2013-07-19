@@ -36,6 +36,8 @@ Grid *grid_create(Map *map, float cell_size)
 	grid->map=map;
 	grid->cell_size=cell_size;
 
+	glGenBuffers(1,&grid->vertices);
+
 	return grid;
 
 
@@ -43,6 +45,7 @@ Grid *grid_create(Map *map, float cell_size)
 
 int grid_free(Grid *grid)
 {
+	glDeleteBuffers(1,&grid->vertices);
 	free(grid);
 	return 0;
 }

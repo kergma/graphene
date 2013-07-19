@@ -155,7 +155,6 @@ init_hax (ModeInfo *mi)
 {
   ball_configuration *bp;
   int wire = MI_IS_WIREFRAME(mi);
- 	scene=scene_create();
 
   if (!bps) {
     bps = (ball_configuration *)
@@ -169,6 +168,7 @@ init_hax (ModeInfo *mi)
   bp = &bps[MI_SCREEN(mi)];
 
   bp->glx_context = init_GL(mi);
+ 	scene=scene_create();
 
   reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 
