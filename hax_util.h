@@ -13,6 +13,14 @@ typedef struct tagGRID_VERTEX {
 	float x,y,z;
 } GRID_VERTEX;
 
+typedef struct tagVECTOR3F
+{
+	float x,y,z;
+} VECTOR3F;
+
+VECTOR3F VECTOR3F_c(float x, float y, float z);
+VECTOR3F VECTOR3F_mulfloat(VECTOR3F v, float m);
+
 
 #define D3DX_2PI 6.28f
 #define COS30 0.86602540378f
@@ -28,12 +36,10 @@ typedef struct tagGRID_VERTEX {
 
 
 
-#define TRITOXZ(t) t=D3DXVECTOR3(-t.y-t.z,0,TAN30*(t.y-t.z))
-
-/* #define XZTOTRI(t) t=D3DXVECTOR3(t.x,COS30*t.z-SIN30*t.x,-COS30*t.z-SIN30*t.x) */
-/* #define TRITOXZ(t) t=D3DXVECTOR3(-t.y-t.z,0,TAN30*(t.y-t.z)) */
-#define XZTOHEX(h) (h)=D3DXVECTOR3(COS30*(h).x-SIN30*(h).z,(h).z,-SIN30*(h).z-COS30*(h).x)
-#define HEXTOXZ(h) (h)=D3DXVECTOR3(TAN30*((h).x-(h).z),0,-(h).z-(h).x)
+#define XZTOTRI(t) t=VECTOR3F_c(t.x,COS30*t.z-SIN30*t.x,-COS30*t.z-SIN30*t.x)
+#define TRITOXZ(t) t=VECTOR3F_c(-t.y-t.z,0,TAN30*(t.y-t.z))
+#define XZTOHEX(h) (h)=VECTOR3F_c(COS30*(h).x-SIN30*(h).z,(h).z,-SIN30*(h).z-COS30*(h).x)
+#define HEXTOXZ(h) (h)=VECTOR3F_c(TAN30*((h).x-(h).z),0,-(h).z-(h).x)
 /* #define TRITOHEX(t) TRITOXZ(t);XZTOHEX(t) */
 /* #define HEXTOTRI(h) HEXTOXZ(h);XZTOTRI(h) */
 

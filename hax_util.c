@@ -6,6 +6,21 @@
 #include "hax_util.h"
 #include "xlockmore.h"
 
+VECTOR3F VECTOR3F_c(float x, float y, float z)
+{
+	VECTOR3F tmp;
+	tmp.x=x; tmp.y=y; tmp.z=z;
+	return tmp;
+}
+
+VECTOR3F VECTOR3F_mulfloat(VECTOR3F v, float m)
+{
+	v.x*=m;
+	v.y*=m;
+	v.z*=m;
+	return v;
+}
+
 void error_exit(const char *message)
 {
 	fprintf(stderr, "%s: %s\n", progname, message);
