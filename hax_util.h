@@ -9,8 +9,8 @@ typedef struct tagHEXAGON_EDGE {
 } HEXAGON_EDGE;
 
 typedef struct tagGRID_VERTEX {
+	unsigned int color;
 	float x,y,z;
-	/*unsigned int color;*/
 } GRID_VERTEX;
 
 
