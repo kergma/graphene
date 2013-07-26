@@ -31,7 +31,7 @@ Scene *scene_create(void)
 int scene_render(Scene *s)
 {
 	camera_render();
-	grid_render();
+	grid_render(s->grid);
 
 	return 0;
 }

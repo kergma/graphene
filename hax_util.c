@@ -57,6 +57,11 @@ unsigned int array_add(Array *a, void *item)
 	return a->count;
 }
 
+void *array_data(Array *a)
+{
+	return a->data;
+}
+
 void array_item(Array *a, unsigned int index, void *item)
 {
 	memcpy(item,a->data+index*a->item_size,a->item_size);

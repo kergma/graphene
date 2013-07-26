@@ -10,7 +10,7 @@ typedef struct tagHEXAGON_EDGE {
 
 typedef struct tagGRID_VERTEX {
 	float x,y,z;
-	unsigned int color;
+	/*unsigned int color;*/
 } GRID_VERTEX;
 
 
@@ -57,6 +57,7 @@ void array_free(Array *a);
 void array_grow(Array *a);
 unsigned int array_add(Array *a, void *item);
 
+void *array_data(Array *a);
 void array_item(Array *a, unsigned int index, void *item);
 unsigned int array_count(Array *a);
 
