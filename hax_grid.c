@@ -9,6 +9,7 @@
 #endif
 
 #include <stdlib.h>
+#include <string.h>
 #include "hax_grid.h"
 #include "hax_map.h"
 
@@ -41,11 +42,44 @@ void add_vertex(Array *a, float x, float y, float z, GLuint c)
 
 Grid *grid_create(Map *map, float cell_size)
 {
+	Array *edges;
+	int i,e;
+	MapCell *cell;
+	HEXAGON_EDGE *edge;
+	MapCell *n;
+
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
 
+
 	g->map=map;
 	g->cell_size=cell_size;
+
+	edges=array_create(sizeof(HEXAGON_EDGE*));
+
+	#define OPPOSITE_EDGE(e) ((e)+3>5?(e)-3:(e)+3)
+
+	/* loop throug map cells */
+	for (i=0;i<array_count(g->map->cells);i++) {
+		/* the current cell */
+		array_item(g->map->cells,i,&cell);
+		/* loop through cell sides */
+		for (e=0;e<6;e++) {
+			/* if side didnt processed yet */
+			if (cell->edges[e]==NULL) {
+				/* create new edge for current side */
+				edge=NEW(HEXAGON_EDGE);
+				memset(edge,0,sizeof(*edge));
+				array_add(edges,&edge);
+				/* link it to cell */
+				cell->edges[e]=edge;
+				/* find another adjacing cell */
+				n=map_neighbour(g->map,cell,hex_direction[e]);
+				/* and link edge to it too */
+				if (n) n->edges[OPPOSITE_EDGE(e)]=edge;
+			};
+		};
+	};
 
 	g->vertices=array_create(sizeof(GRID_VERTEX));
 	add_vertex(g->vertices, 0.0f, 0.0f,0.0f,0x000000);
@@ -61,6 +95,7 @@ Grid *grid_create(Map *map, float cell_size)
 	add_vertex(g->vertices,-1.0f,-1.0f,0.0f,0x00ff00);
 	add_vertex(g->vertices,-1.0f,-1.2f,0.0f,0xff0000);
 
+	array_free(edges);
 	return g;
 
 
