@@ -85,3 +85,11 @@ unsigned int array_count(Array *a)
 {
 	return a->count;
 }
+unsigned int array_find(Array *a, void *item)
+{
+	unsigned int i;
+
+	for (i=0;i<array_count(a);i++)
+		if (memcmp(item,a->data+i*a->item_size,a->item_size)==0) return i;
+	return -1;
+}

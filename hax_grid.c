@@ -28,7 +28,7 @@ int grid_render(Grid *g)
 	glEnd();
 
 	glInterleavedArrays(GL_C4UB_V3F,sizeof(GRID_VERTEX),array_data(g->vertices));
-	glDrawArrays(GL_LINE_STRIP,0,array_count(g->vertices));
+	glDrawElements(GL_LINES,array_count(g->indices),GL_UNSIGNED_INT,array_data(g->indices));
 	return 0;
 }
 
@@ -74,6 +74,7 @@ Grid *grid_create(Map *map, float cell_size)
 	VECTOR3F vc[6];
 	VECTOR3F cell_coord;
 	HEXAGON_VERTEX v, *vertex;
+	GLuint index;
 
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
@@ -87,14 +88,14 @@ Grid *grid_create(Map *map, float cell_size)
 
 	#define OPPOSITE_EDGE(e) ((e)+3>5?(e)-3:(e)+3)
 
-	/* loop throug map cells */
+	/* loop through map cells */
 	for (i=0;i<array_count(g->map->cells);i++)
 	{
 		/* the current cell */
 		array_item(g->map->cells,i,&cell);
 		/* loop through cell sides */
 		for (e=0;e<6;e++) {
-			/* if side didnt processed yet */
+			/* if side wasnt processed yet */
 			if (cell->edges[e]==NULL)
 			{
 				/* create new edge for current side */
@@ -170,28 +171,29 @@ Grid *grid_create(Map *map, float cell_size)
 	grid_clear(g);
 
 	g->vertices=array_create(sizeof(GRID_VERTEX));
-	add_vertex(g->vertices, 0.0f, 0.0f,0.0f,0x000000);
-	add_vertex(g->vertices, 0.0f,-0.2f,0.0f,0x0000ff);
-	add_vertex(g->vertices,-0.2f,-0.2f,0.0f,0x00ff00);
-	add_vertex(g->vertices,-0.2f,-0.4f,0.0f,0xff0000);
-	add_vertex(g->vertices,-0.4f,-0.4f,0.0f,0xffffff);
-	add_vertex(g->vertices,-0.4f,-0.6f,0.0f,0xffff00);
-	add_vertex(g->vertices,-0.6f,-0.6f,0.0f,0xff00ff);
-	add_vertex(g->vertices,-0.6f,-0.8f,0.0f,0x00ffff);
-	add_vertex(g->vertices,-0.8f,-0.8f,0.0f,0x000000);
-	add_vertex(g->vertices,-0.8f,-1.0f,0.0f,0x0000ff);
-	add_vertex(g->vertices,-1.0f,-1.0f,0.0f,0x00ff00);
-	add_vertex(g->vertices,-1.0f,-1.2f,0.0f,0xff0000);
-
-	for (i=0;i<array_count(edges);i++)
-	{
-		array_item(edges,i,&edge);
-		free(edge);
+	for (i=0;i<array_count(vertices);i++) {
+		array_item(vertices,i,&vertex);
+		add_vertex(g->vertices,vertex->x,0,vertex->z,0xffffff);
 	};
+
+	g->indices=array_create(sizeof(GLuint));
+	for (i=0;i<array_count(edges);i++) {
+		array_item(edges,i,&edge);
+		index=array_find(vertices,&edge->v1);
+		array_add(g->indices,&index);
+		index=array_find(vertices,&edge->v2);
+		array_add(g->indices,&index);
+	};
+
 	for (i=0;i<array_count(vertices);i++)
 	{
 		array_item(vertices,i,&vertex);
 		free(vertex);
+	};
+	for (i=0;i<array_count(edges);i++)
+	{
+		array_item(edges,i,&edge);
+		free(edge);
 	};
 	array_free(vertices);
 	array_free(edges);
@@ -205,6 +207,7 @@ void grid_clear(Grid *g)
 
 int grid_free(Grid *g)
 {
+	array_free(g->indices);
 	array_free(g->vertices);
 	free(g);
 	return 0;
