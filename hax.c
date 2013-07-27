@@ -83,6 +83,22 @@ static argtype vars[] = {
 
 ENTRYPOINT ModeSpecOpt hax_opts = {countof(opts), opts, countof(vars), vars, NULL};
 
+static double start_time=0.0;
+static double last_drawn_time=0.0;
+
+static double current_time(void)
+{
+	struct timeval tv;
+# ifdef GETTIMEOFDAY_TWO_ARGS
+	struct timezone tzp;
+	gettimeofday(&tv, &tzp);
+# else
+	gettimeofday(&tv);
+# endif
+
+	return (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+}
+
 
 /* Window management, etc
  */
@@ -169,6 +185,7 @@ init_hax (ModeInfo *mi)
 
   bp->glx_context = init_GL(mi);
  	scene=scene_create();
+	start_time=current_time();
 
   reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 
@@ -235,6 +252,7 @@ draw_hax (ModeInfo *mi)
   ball_configuration *bp = &bps[MI_SCREEN(mi)];
   Display *dpy = MI_DISPLAY(mi);
   Window window = MI_WINDOW(mi);
+	double cur_time;
 
   if (!bp->glx_context)
     return;
@@ -264,8 +282,13 @@ draw_hax (ModeInfo *mi)
   /*glScalef (2.0, 2.0, 2.0);*/
 
 
+ 	
+	cur_time=current_time()-start_time;
 
+	scene_animate(scene,cur_time-last_drawn_time);
 	scene_render(scene);
+
+	last_drawn_time=cur_time;
 	
 
   if (mi->fps_p) do_fps (mi);

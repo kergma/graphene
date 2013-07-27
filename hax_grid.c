@@ -213,3 +213,14 @@ int grid_free(Grid *g)
 	return 0;
 }
 
+void grid_animate(Grid *g, float delta)
+{
+	int i;
+	GRID_VERTEX *v=array_data(g->vertices);
+
+	for (i=0;i<array_count(g->vertices);i++)
+	{
+		v->y=((float)(rand()%10))/100.0f;
+		v++;
+	};
+}

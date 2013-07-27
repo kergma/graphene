@@ -42,3 +42,8 @@ int scene_free(Scene *s)
 	free(s);
 	return 0;
 }
+
+void scene_animate(Scene *s, float delta)
+{
+	grid_animate(s->grid,delta);
+}

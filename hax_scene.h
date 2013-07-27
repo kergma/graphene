@@ -10,6 +10,7 @@ typedef struct tagScene
 int scene_render(Scene *s);
 Scene *scene_create(void);
 int scene_free(Scene *s);
+void scene_animate(Scene *s, float delta);
 
 #define HAX_SCENE_H
 #endif /* HAX_SCENE_H */
