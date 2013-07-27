@@ -42,6 +42,8 @@
 
 
 Scene *scene=NULL;
+static SceneSpec clspec;
+
 typedef struct {
   GLXContext *glx_context;
   rotator *rot;
@@ -67,7 +69,10 @@ static Bool do_spin;
 static GLfloat speed;
 static Bool do_wander;
 
-static XrmOptionDescRec opts[] = {
+static XrmOptionDescRec opts[] =
+{
+	{ "-map-size",   ".map_size",   XrmoptionSepArg, "17" },
+	{ "-cell-size",  ".cell_size",  XrmoptionSepArg, "0.3" },
   { "-spin",   ".spin",   XrmoptionNoArg, "True" },
   { "+spin",   ".spin",   XrmoptionNoArg, "False" },
   { "-speed",  ".speed",  XrmoptionSepArg, 0 },
@@ -75,7 +80,11 @@ static XrmOptionDescRec opts[] = {
   { "+wander", ".wander", XrmoptionNoArg, "False" }
 };
 
-static argtype vars[] = {
+static argtype vars[] =
+{
+	{&clspec.map_size,   "map_size",   "Size of the map",   "3",   t_Int},
+	{&clspec.cell_size,  "cell_size",  "Size of the cell",  "0.3", t_Float},
+
   {&do_spin,   "spin",   "Spin",   DEF_SPIN,   t_Bool},
   {&do_wander, "wander", "Wander", DEF_WANDER, t_Bool},
   {&speed,     "speed",  "Speed",  DEF_SPEED,  t_Float},
@@ -184,7 +193,7 @@ init_hax (ModeInfo *mi)
   bp = &bps[MI_SCREEN(mi)];
 
   bp->glx_context = init_GL(mi);
- 	scene=scene_create();
+ 	scene=scene_create(&clspec);
 	start_time=current_time();
 
   reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
