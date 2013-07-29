@@ -14,15 +14,15 @@
 #include "hax_camera.h"
 #include "hax_grid.h"
 
-Scene *scene_create(SceneSpec *spec)
+Scene *scene_create(char *spec)
 {
 	Scene *s=NEW(Scene);
 	if (!s) error_exit("out of memory");
 
 	s->map=map_create();
-	map_create_hex(s->map,spec->map_size);
+	map_create_hex(s->map,4);
 
-	s->grid=grid_create(s->map,spec->cell_size);
+	s->grid=grid_create(s->map,0.1f);
 
 	return s;
 }

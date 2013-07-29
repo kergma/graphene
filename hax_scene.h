@@ -7,14 +7,8 @@ typedef struct tagScene
 	Grid *grid;
 } Scene;
 
-typedef struct tag_SceneSpec
-{
-	int map_size;
-	float cell_size;
-} SceneSpec;
-
 int scene_render(Scene *s);
-Scene *scene_create(SceneSpec *spec);
+Scene *scene_create(char *spec);
 int scene_free(Scene *s);
 void scene_animate(Scene *s, float delta);
 

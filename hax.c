@@ -26,26 +26,24 @@
 #ifdef USE_GL /* whole file */
 
 Scene *scene=NULL;
-static SceneSpec clspec;
+static char *cl_scene_spec;
 
 typedef struct tagHaxInfo
 {
 	GLXContext *glx_context;
-	SceneSpec scene_spec;
+	char *scene_spec;
 } HaxInfo;
 
 static HaxInfo *hax_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
-	{ "-map-size",   ".map_size",   XrmoptionSepArg, "17" },
-	{ "-cell-size",  ".cell_size",  XrmoptionSepArg, "0.3" },
+	{ "-scene", ".scene", XrmoptionSepArg, "test,17,0.3" },
 };
 
 static argtype vars[] =
 {
-	{&clspec.map_size,   "map_size",   "Size of the map",   "3",   t_Int},
-	{&clspec.cell_size,  "cell_size",  "Size of the cell",  "0.3", t_Float},
+	{&cl_scene_spec, "scene",  "Scene specification",  "test 17 0.3", t_String},
 };
 
 ENTRYPOINT ModeSpecOpt hax_opts = {countof(opts), opts, countof(vars), vars, NULL};
@@ -105,13 +103,13 @@ ENTRYPOINT void init_hax (ModeInfo *mi)
 	};
 
 	hi=&hax_info[MI_SCREEN(mi)];
-	hi->scene_spec=clspec;
+	hi->scene_spec=cl_scene_spec;
 	hi->glx_context=init_GL(mi);
 
 
 	reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 
- 	scene=scene_create(&clspec);
+ 	scene=scene_create(cl_scene_spec);
 	start_time=current_time();
 }
 
@@ -143,6 +141,7 @@ ENTRYPOINT void draw_hax (ModeInfo *mi)
 ENTRYPOINT void release_hax (ModeInfo *mi)
 {
 	scene_free(scene);
+	free(cl_scene_spec);
 	if (hax_info) free(hax_info);
 	hax_info=NULL;
 }
