@@ -38,12 +38,12 @@ static HaxInfo *hax_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
-	{ "-scene", ".scene", XrmoptionSepArg, "test,17,0.3" },
+	{ "-scene", ".scene", XrmoptionSepArg, "don't know why this field is needed" },
 };
 
 static argtype vars[] =
 {
-	{&cl_scene_spec, "scene",  "Scene specification",  "test 17 0.3", t_String},
+	{&cl_scene_spec, "scene",  "Scene specification",  "test 1 17 0.3 0x808080", t_String},
 };
 
 ENTRYPOINT ModeSpecOpt hax_opts = {countof(opts), opts, countof(vars), vars, NULL};
@@ -124,9 +124,6 @@ ENTRYPOINT void draw_hax (ModeInfo *mi)
 	if (!hi->glx_context) return;
 
 	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(hi->glx_context));
-
-	glClearColor(0.5f,0.5f,0.5f,1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	cur_time=current_time()-start_time;
 	scene_animate(scene,cur_time-last_drawn_time);

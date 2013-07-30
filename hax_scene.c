@@ -100,6 +100,10 @@ Scene *scene_create(char *spec)
 	printf("cell_size %f\n",cell_size);
 	if (!parse_spec(&ss,&bgcolor,'x')) error_exit("error reading scene specificatin");
 	printf("bgcolor 0x%x\n",bgcolor);
+	s->cla=(float)(bgcolor>>24&0xff)/255.f;
+	s->clr=(float)(bgcolor>>16&0xff)/255.f;
+	s->clg=(float)(bgcolor>>8&0xff)/255.f;
+	s->clb=(float)(bgcolor&0xff)/255.f;
 	parse_spec(&ss,&scene_name,'s');
 	if (scene_name) printf("scene_name %s\n",scene_name);
 
@@ -114,6 +118,9 @@ Scene *scene_create(char *spec)
 
 int scene_render(Scene *s)
 {
+	glClearColor(s->clr,s->clg,s->clb,s->cla);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	camera_render();
 	grid_render(s->grid);
 

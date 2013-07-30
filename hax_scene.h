@@ -5,6 +5,7 @@ typedef struct tagScene
 {
 	Map *map;
 	Grid *grid;
+	GLfloat clr,clg,clb,cla;
 } Scene;
 
 int scene_render(Scene *s);
