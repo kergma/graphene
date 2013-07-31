@@ -121,6 +121,7 @@ Scene *scene_create(char *spec)
 	RandInt map_size;
 	RandFloat cell_size;
 	unsigned int bgcolor=0x121212;
+	int wave_count;
 	char *ss=spec;
 
 	if (!s) error_exit("out of memory");
@@ -137,6 +138,9 @@ Scene *scene_create(char *spec)
 	s->clr=(float)(bgcolor>>16&0xff)/255.f;
 	s->clg=(float)(bgcolor>>8&0xff)/255.f;
 	s->clb=(float)(bgcolor&0xff)/255.f;
+	if (!parse_spec(&ss,&wave_count,"i")) error_exit("error reading scene specificatin");
+	
+	
 	parse_spec(&ss,&scene_name,"s");
 	if (scene_name) printf("scene_name %s\n",scene_name);
 

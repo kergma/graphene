@@ -197,6 +197,8 @@ Grid *grid_create(Map *map, float cell_size)
 	};
 	array_free(vertices);
 	array_free(edges);
+
+	g->waves=array_create(sizeof(GRID_WAVE));
 	return g;
 
 
@@ -207,6 +209,7 @@ void grid_clear(Grid *g)
 
 int grid_free(Grid *g)
 {
+	array_free(g->waves);
 	array_free(g->indices);
 	array_free(g->vertices);
 	free(g);
