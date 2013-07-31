@@ -2,6 +2,7 @@
 # include "config.h"
 #endif
 
+#include <stdlib.h>
 #include <string.h>
 #include "hax_util.h"
 #include "xlockmore.h"
@@ -92,4 +93,48 @@ unsigned int array_find(Array *a, void *item)
 	for (i=0;i<array_count(a);i++)
 		if (memcmp(item,a->data+i*a->item_size,a->item_size)==0) return i;
 	return -1;
+}
+
+RandInt RandInt_c2(int a, int b)
+{
+	RandInt v;
+	v.a=a;
+	v.b=b;
+	v.random=1;
+	return v;
+}
+
+RandInt RandInt_c1(int a)
+{
+	RandInt v;
+	v.a=a;
+	v.random=0;
+	return v;
+}
+
+int RandInt_value(RandInt *v)
+{
+	return v->random?(v->b-v->a+1)*(long int)random()/RAND_MAX+v->a:v->a;
+}
+
+RandFloat RandFloat_c2(float a, float b)
+{
+	RandFloat v;
+	v.a=a;
+	v.b=b;
+	v.random=1;
+	return v;
+}
+
+RandFloat RandFloat_c1(float a)
+{
+	RandFloat v;
+	v.a=a;
+	v.random=0;
+	return v;
+}
+
+float RandFloat_value(RandFloat *v)
+{
+	return v->random?(v->b-v->a)*(double)random()/RAND_MAX+v->a:v->a;
 }

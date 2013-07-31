@@ -21,6 +21,25 @@ typedef struct tagVECTOR3F
 VECTOR3F VECTOR3F_c(float x, float y, float z);
 VECTOR3F VECTOR3F_mulfloat(VECTOR3F v, float m);
 
+typedef struct tagRandInt
+{
+	int a,b;
+	char random;
+} RandInt;
+
+RandInt RandInt_c2(int a, int b);
+RandInt RandInt_c1(int a);
+int RandInt_value(RandInt *v);
+
+typedef struct tagRandFloat
+{
+	float a,b;
+	char random;
+} RandFloat;
+
+RandFloat RandFloat_c2(float a, float b);
+RandFloat RandFloat_c1(float a);
+float RandFloat_value(RandFloat *v);
 
 #define D3DX_2PI 6.28f
 #define COS30 0.86602540378f
