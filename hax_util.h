@@ -41,6 +41,13 @@ RandFloat RandFloat_c2(float a, float b);
 RandFloat RandFloat_c1(float a);
 float RandFloat_value(RandFloat *v);
 
+typedef struct tagRandVector {
+	RandFloat x,y,z;
+}  RandVector;
+
+RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z);
+RandVector RandVector_value(RandVector *v);
+
 #define D3DX_2PI 6.28f
 #define COS30 0.86602540378f
 #define TAN30 0.5773502691f

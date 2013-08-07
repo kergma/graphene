@@ -121,7 +121,11 @@ Scene *scene_create(char *spec)
 	RandInt map_size;
 	RandFloat cell_size;
 	unsigned int bgcolor=0x121212;
-	int wave_count;
+	int wave_count,i;
+	Array *waves;
+	RandVector source;
+	RandFloat amplitude, length, period;
+	RandInt replicate;
 	char *ss=spec;
 
 	if (!s) error_exit("out of memory");
@@ -138,8 +142,13 @@ Scene *scene_create(char *spec)
 	s->clr=(float)(bgcolor>>16&0xff)/255.f;
 	s->clg=(float)(bgcolor>>8&0xff)/255.f;
 	s->clb=(float)(bgcolor&0xff)/255.f;
+
+	waves=array_create(sizeof(GRID_WAVE));
 	if (!parse_spec(&ss,&wave_count,"i")) error_exit("error reading scene specificatin");
-	
+	for (i=0;i<wave_count;i++)
+	{
+
+	};
 	
 	parse_spec(&ss,&scene_name,"s");
 	if (scene_name) printf("scene_name %s\n",scene_name);
@@ -149,6 +158,8 @@ Scene *scene_create(char *spec)
 
 	s->grid=grid_create(s->map,RandFloat_value(&cell_size));
 	free(scene_name);
+	
+	array_free(waves);
 
 	return s;
 }
