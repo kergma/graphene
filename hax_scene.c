@@ -166,6 +166,13 @@ Scene *scene_create(char *spec)
 	parse_spec(&ss,&wave_count,"i","wave count",1);
 	for (i=0;i<wave_count;i++)
 	{
+		parse_spec(&ss,&source.x,"rf","wave source x",1);
+		parse_spec(&ss,&source.y,"rf","wave source y",1);
+		parse_spec(&ss,&source.z,"rf","wave source z",1);
+		parse_spec(&ss,&amplitude,"rf","wave amplitude",1);
+		parse_spec(&ss,&length,"rf","wave length",1);
+		parse_spec(&ss,&period,"rf","wave period",1);
+		parse_spec(&ss,&replicate,"ri","wave replicate",1);
 	};
 	
 	parse_spec(&ss,&scene_name,"s","scene name",0);
