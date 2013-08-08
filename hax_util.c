@@ -138,3 +138,21 @@ float RandFloat_value(RandFloat *v)
 {
 	return v->random?(v->b-v->a)*(double)random()/RAND_MAX+v->a:v->a;
 }
+
+RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z)
+{
+	RandVector v;
+	v.x=x;
+	v.y=y;
+	v.z=z;
+	return v;
+}
+
+VECTOR3F RandVector_value(RandVector *v)
+{
+	VECTOR3F r;
+	r.x=RandFloat_value(&v->x);
+	r.y=RandFloat_value(&v->y);
+	r.z=RandFloat_value(&v->z);
+	return r;
+}

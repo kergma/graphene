@@ -118,7 +118,28 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required);
 void parse_spec(char **pos, void *out, char *type, char *key, int required)
 {
 	char buf[512];
-	int read=read_value(pos,out,type);
+	int read;
+	if (!strcmp(type,"v"))
+	{
+		snprintf(buf,512,"%s x",key);
+		parse_spec(pos,&((VECTOR3F*)out)->x,"f",buf,required);
+		snprintf(buf,512,"%s y",key);
+		parse_spec(pos,&((VECTOR3F*)out)->y,"f",buf,required);
+		snprintf(buf,512,"%s z",key);
+		parse_spec(pos,&((VECTOR3F*)out)->z,"f",buf,required);
+		return;
+	};
+	if (!strcmp(type,"rv"))
+	{
+		snprintf(buf,512,"%s x",key);
+		parse_spec(pos,&((RandVector*)out)->x,"rf",buf,required);
+		snprintf(buf,512,"%s y",key);
+		parse_spec(pos,&((RandVector*)out)->y,"rf",buf,required);
+		snprintf(buf,512,"%s z",key);
+		parse_spec(pos,&((RandVector*)out)->z,"rf",buf,required);
+		return;
+	};
+	read=read_value(pos,out,type);
 	if (!read && required) 
 	{
 		snprintf(buf,512,"error reading scene specification, expecting: %s",key);
@@ -139,17 +160,18 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 Scene *scene_create(char *spec)
 {
 	Scene *s=NEW(Scene);
-	char *scene_name=NULL;
+	char *ss=spec;
 	int version=1;
 	RandInt map_size;
 	RandFloat cell_size;
 	unsigned int bgcolor=0x121212;
-	int wave_count,i;
-	Array *waves;
+	int wave_count,i,j;
 	RandVector source;
 	RandFloat amplitude, length, period;
 	RandInt replicate;
-	char *ss=spec;
+	Array *waves;
+	GRID_WAVE wave;
+	char *scene_name=NULL;
 
 	if (!s) error_exit("out of memory");
 
@@ -166,13 +188,19 @@ Scene *scene_create(char *spec)
 	parse_spec(&ss,&wave_count,"i","wave count",1);
 	for (i=0;i<wave_count;i++)
 	{
-		parse_spec(&ss,&source.x,"rf","wave source x",1);
-		parse_spec(&ss,&source.y,"rf","wave source y",1);
-		parse_spec(&ss,&source.z,"rf","wave source z",1);
+		parse_spec(&ss,&source,"rv","wave source",1);
 		parse_spec(&ss,&amplitude,"rf","wave amplitude",1);
 		parse_spec(&ss,&length,"rf","wave length",1);
 		parse_spec(&ss,&period,"rf","wave period",1);
 		parse_spec(&ss,&replicate,"ri","wave replicate",1);
+		for (j=0;j<RandInt_value(&replicate)+1;j++)
+		{
+			wave.source=RandVector_value(&source);
+			wave.amplitude=RandFloat_value(&amplitude);
+			wave.length=RandFloat_value(&length);
+			wave.period=RandFloat_value(&period);
+			array_add(waves,&wave);
+		};
 	};
 	
 	parse_spec(&ss,&scene_name,"s","scene name",0);
