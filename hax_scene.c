@@ -9,14 +9,15 @@
 #endif
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "hax_scene.h"
 #include "hax_map.h"
 #include "hax_camera.h"
 #include "hax_grid.h"
 
-int read_value(char **pos, void *out, char type);
-int read_value(char **pos, void *out, char type)
+int read_atomic_value(char **pos, void *out, char type);
+int read_atomic_value(char **pos, void *out, char type)
 {
 
 	char *tm1=calloc(strlen(*pos)+1,sizeof(char));
@@ -79,19 +80,19 @@ int read_value(char **pos, void *out, char type)
 	return 1;
 }
 
-int parse_spec(char **pos, void *out, char *type);
-int parse_spec(char **pos, void *out, char *type)
+int read_value(char **pos, void *out, char *type);
+int read_value(char **pos, void *out, char *type)
 {
 	int ai,bi;
 	float af,bf;
 	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s"))
-		return read_value(pos,out,*type);
+		return read_atomic_value(pos,out,*type);
 	if (!strcmp(type,"ri"))
 	{
-		if (!read_value(pos,&ai,'i')) return 0;
+		if (!read_atomic_value(pos,&ai,'i')) return 0;
 		if (**pos==':')
 		{
-			if (!read_value(pos,&bi,'i')) return 0;
+			if (!read_atomic_value(pos,&bi,'i')) return 0;
 			*((RandInt*)out)=RandInt_c2(ai,bi);
 		}
 		else
@@ -100,10 +101,10 @@ int parse_spec(char **pos, void *out, char *type)
 	};
 	if (!strcmp(type,"rf"))
 	{
-		if (!read_value(pos,&af,'f')) return 0;
+		if (!read_atomic_value(pos,&af,'f')) return 0;
 		if (**pos==':')
 		{
-			if (!read_value(pos,&bf,'f')) return 0;
+			if (!read_atomic_value(pos,&bf,'f')) return 0;
 			*((RandFloat*)out)=RandFloat_c2(af,bf);
 		}
 		else
@@ -111,6 +112,28 @@ int parse_spec(char **pos, void *out, char *type)
 
 	};
 	return 1;
+}
+
+void parse_spec(char **pos, void *out, char *type, char *key, int required);
+void parse_spec(char **pos, void *out, char *type, char *key, int required)
+{
+	char buf[512];
+	int read=read_value(pos,out,type);
+	if (!read && required) 
+	{
+		snprintf(buf,512,"error reading scene specification, expecting: %s",key);
+		error_exit(buf);
+	};
+	if (!read) return;
+	if (!strcmp(type,"i")) snprintf(buf,512,"%d",*((int*)out));
+	if (!strcmp(type,"ri") && ((RandInt*)out)->random) snprintf(buf,512,"%d:%d",((RandInt*)out)->a,((RandInt*)out)->b);
+	if (!strcmp(type,"ri") && !((RandInt*)out)->random) snprintf(buf,512,"%d",((RandInt*)out)->a);
+	if (!strcmp(type,"f")) snprintf(buf,512,"%f",*((float*)out));
+	if (!strcmp(type,"rf") && ((RandFloat*)out)->random) snprintf(buf,512,"%f:%f",((RandFloat*)out)->a,((RandFloat*)out)->b);
+	if (!strcmp(type,"rf") && !((RandFloat*)out)->random) snprintf(buf,512,"%f",((RandFloat*)out)->a);
+	if (!strcmp(type,"x")) snprintf(buf,512,"0x%x",*((unsigned int*)out));
+	if (!strcmp(type,"s")) snprintf(buf,512,"%s",*(char**)out);
+	printf("%s: %s\n",key,buf);
 }
 
 Scene *scene_create(char *spec)
@@ -130,28 +153,22 @@ Scene *scene_create(char *spec)
 
 	if (!s) error_exit("out of memory");
 
-	if (!parse_spec(&ss,&version,"i")) error_exit("error reading scene specificatin");
-	printf("version %d\n",version);
-	if (!parse_spec(&ss,&map_size,"ri")) error_exit("error reading scene specificatin");
-	printf("map_size %d:%d\n",map_size.a,map_size.b);
-	if (!parse_spec(&ss,&cell_size,"rf")) error_exit("error reading scene specificatin");
-	printf("cell_size %f:%f\n",cell_size.a,cell_size.b);
-	if (!parse_spec(&ss,&bgcolor,"x")) error_exit("error reading scene specificatin");
-	printf("bgcolor 0x%x\n",bgcolor);
+	parse_spec(&ss,&version,"i","version",1);
+	parse_spec(&ss,&map_size,"ri","map size",1);
+	parse_spec(&ss,&cell_size,"rf","cell size",1);
+	parse_spec(&ss,&bgcolor,"x","bgcolor",1);
 	s->cla=(float)(bgcolor>>24&0xff)/255.f;
 	s->clr=(float)(bgcolor>>16&0xff)/255.f;
 	s->clg=(float)(bgcolor>>8&0xff)/255.f;
 	s->clb=(float)(bgcolor&0xff)/255.f;
 
 	waves=array_create(sizeof(GRID_WAVE));
-	if (!parse_spec(&ss,&wave_count,"i")) error_exit("error reading scene specificatin");
+	parse_spec(&ss,&wave_count,"i","wave count",1);
 	for (i=0;i<wave_count;i++)
 	{
-
 	};
 	
-	parse_spec(&ss,&scene_name,"s");
-	if (scene_name) printf("scene_name %s\n",scene_name);
+	parse_spec(&ss,&scene_name,"s","scene name",0);
 
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
