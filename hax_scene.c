@@ -54,12 +54,7 @@ int read_atomic_value(char **pos, void *out, char type)
 			(*pos)++;
 			tm2++;
 		};
-		while (tm2>tm1 && strchr(whitespace,**pos))
-		{
-			(*pos)--;
-			tm2--;
-		};
-		tm2++;
+		while (tm2>tm1 && strchr(whitespace,*(tm2-1))) tm2--;
 	};
 	*tm2=0;
 
