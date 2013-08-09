@@ -181,6 +181,7 @@ Scene *scene_create(char *spec)
 	char *scene_name=NULL;
 
 	if (!s) error_exit("out of memory");
+	memset(s,0,sizeof(Scene));
 
 	parse_spec(&ss,&version,"i","version",1);
 	parse_spec(&ss,&map_size,"ri","map size",1);
@@ -212,6 +213,8 @@ Scene *scene_create(char *spec)
 	
 	parse_spec(&ss,&scene_name,"s","scene name",0);
 
+	s->camera=camera_create(0);
+
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
 
@@ -228,7 +231,7 @@ int scene_render(Scene *s)
 	glClearColor(s->clr,s->clg,s->clb,s->cla);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	camera_render();
+	camera_render(s->camera);
 	grid_render(s->grid);
 
 	return 0;
@@ -236,6 +239,7 @@ int scene_render(Scene *s)
 
 int scene_free(Scene *s)
 {
+	camera_free(s->camera);
 	grid_free(s->grid);
 	map_free(s->map);
 	free(s);

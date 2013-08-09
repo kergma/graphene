@@ -80,7 +80,7 @@ ENTRYPOINT void reshape_hax (ModeInfo *mi, int width, int height)
 			0.0, 0.0, 0.0,
 			0.0, 1.0, 0.0);
 
-	camera_render();
+	/*camera_render();*/
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 

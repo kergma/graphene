@@ -1,10 +1,12 @@
 #ifndef HAX_SCENE_H
 #include "hax_map.h"
 #include "hax_grid.h"
+#include "hax_camera.h"
 typedef struct tagScene
 {
 	Map *map;
 	Grid *grid;
+	Camera *camera;
 	GLfloat clr,clg,clb,cla;
 } Scene;
 
