@@ -178,6 +178,12 @@ Scene *scene_create(char *spec)
 	RandInt replicate;
 	Array *waves;
 	GRID_WAVE wave;
+	int cam_count=0;
+	RandVector pos,target,up;
+	RandFloat fov,time;
+
+
+
 	char *scene_name=NULL;
 
 	if (!s) error_exit("out of memory");
@@ -210,10 +216,25 @@ Scene *scene_create(char *spec)
 			array_add(waves,&wave);
 		};
 	};
-	
-	parse_spec(&ss,&scene_name,"s","scene name",0);
+
 
 	s->camera=camera_create(0);
+
+	parse_spec(&ss,&cam_count,"i","camera count",1);
+	for (i=0;i<cam_count;i++)
+	{
+		parse_spec(&ss,&pos,"rv","camera pos",1);
+		parse_spec(&ss,&target,"rv","camera target",1);
+		parse_spec(&ss,&up,"rv","camera up",1);
+		parse_spec(&ss,&fov,"rf","camera fov",1);
+		parse_spec(&ss,&time,"rf","camera time",1);
+		parse_spec(&ss,&replicate,"ri","camera replicate",1);
+		for (j=0;j<RandInt_value(&replicate)+1;j++)
+			camera_add_point(s->camera,RandVector_value(&pos),RandVector_value(&target),RandVector_value(&up),DEGREE_TO_RADIAN(RandFloat_value(&fov)),RandFloat_value(&time));
+
+	};
+	
+	parse_spec(&ss,&scene_name,"s","scene name",0);
 
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
@@ -248,5 +269,6 @@ int scene_free(Scene *s)
 
 void scene_animate(Scene *s, float delta)
 {
+	camera_animate(s->camera,delta);
 	grid_animate(s->grid,delta);
 }

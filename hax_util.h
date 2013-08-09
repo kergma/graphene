@@ -50,10 +50,13 @@ typedef struct tagRandVector {
 RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z);
 VECTOR3F RandVector_value(RandVector *v);
 
+#define THE_PI 3.14159f
 #define DOUBLE_PI 6.28f
 #define COS30 0.86602540378f
 #define TAN30 0.5773502691f
 #define SIN30 0.5f
+
+#define DEGREE_TO_RADIAN(d) ((d)*180/THE_PI)
 
 #define ROUND(x) floorf((x)+0.5f)
 
