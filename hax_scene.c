@@ -82,6 +82,10 @@ int read_value(char **pos, void *out, char *type)
 	float af,bf;
 	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s"))
 		return read_atomic_value(pos,out,*type);
+	if (!strcmp(type,"v"))
+		return read_atomic_value(pos,&((VECTOR3F*)out)->x,'f') && 
+			read_atomic_value(pos,&((VECTOR3F*)out)->y,'f') && 
+			read_atomic_value(pos,&((VECTOR3F*)out)->z,'f');
 	if (!strcmp(type,"ri"))
 	{
 		if (!read_atomic_value(pos,&ai,'i')) return 0;
@@ -106,7 +110,35 @@ int read_value(char **pos, void *out, char *type)
 			*((RandFloat*)out)=RandFloat_c1(af);
 
 	};
+	if (!strcmp(type,"rv"))
+		return read_value(pos,&((RandVector*)out)->x,"rf") &&
+			read_value(pos,&((RandVector*)out)->y,"rf") &&
+			read_value(pos,&((RandVector*)out)->z,"rf");
 	return 1;
+}
+
+int snprintf_ri(char *str, size_t size, RandInt v);
+int snprintf_ri(char *str, size_t size, RandInt v)
+{
+	if (v.random)
+		return snprintf(str,size,"%d:%d",v.a,v.b);
+	return snprintf(str,size,"%d",v.a);
+}
+int snprintf_rf(char *str, size_t size, RandFloat v);
+int snprintf_rf(char *str, size_t size, RandFloat v)
+{
+	if (v.random)
+		return snprintf(str,size,"%f:%f",v.a,v.b);
+	return snprintf(str,size,"%f",v.a);
+}
+int snprintf_rv(char *str, size_t size, RandVector v);
+int snprintf_rv(char *str, size_t size, RandVector v)
+{
+	char x[32],y[32],z[32];
+	snprintf_rf(x,32,v.x);
+	snprintf_rf(y,32,v.y);
+	snprintf_rf(z,32,v.z);
+	return snprintf(str,size,"%s, %s, %s",x,y,z);
 }
 
 void parse_spec(char **pos, void *out, char *type, char *key, int required);
@@ -114,26 +146,6 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 {
 	char buf[512];
 	int read;
-	if (!strcmp(type,"v"))
-	{
-		snprintf(buf,512,"%s x",key);
-		parse_spec(pos,&((VECTOR3F*)out)->x,"f",buf,required);
-		snprintf(buf,512,"%s y",key);
-		parse_spec(pos,&((VECTOR3F*)out)->y,"f",buf,required);
-		snprintf(buf,512,"%s z",key);
-		parse_spec(pos,&((VECTOR3F*)out)->z,"f",buf,required);
-		return;
-	};
-	if (!strcmp(type,"rv"))
-	{
-		snprintf(buf,512,"%s x",key);
-		parse_spec(pos,&((RandVector*)out)->x,"rf",buf,required);
-		snprintf(buf,512,"%s y",key);
-		parse_spec(pos,&((RandVector*)out)->y,"rf",buf,required);
-		snprintf(buf,512,"%s z",key);
-		parse_spec(pos,&((RandVector*)out)->z,"rf",buf,required);
-		return;
-	};
 	read=read_value(pos,out,type);
 	if (!read && required) 
 	{
@@ -142,13 +154,13 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 	};
 	if (!read) return;
 	if (!strcmp(type,"i")) snprintf(buf,512,"%d",*((int*)out));
-	if (!strcmp(type,"ri") && ((RandInt*)out)->random) snprintf(buf,512,"%d:%d",((RandInt*)out)->a,((RandInt*)out)->b);
-	if (!strcmp(type,"ri") && !((RandInt*)out)->random) snprintf(buf,512,"%d",((RandInt*)out)->a);
+	if (!strcmp(type,"ri")) snprintf_ri(buf,512,*((RandInt*)out));
 	if (!strcmp(type,"f")) snprintf(buf,512,"%f",*((float*)out));
-	if (!strcmp(type,"rf") && ((RandFloat*)out)->random) snprintf(buf,512,"%f:%f",((RandFloat*)out)->a,((RandFloat*)out)->b);
-	if (!strcmp(type,"rf") && !((RandFloat*)out)->random) snprintf(buf,512,"%f",((RandFloat*)out)->a);
+	if (!strcmp(type,"rf")) snprintf_rf(buf,512,*((RandFloat*)out));
 	if (!strcmp(type,"x")) snprintf(buf,512,"0x%x",*((unsigned int*)out));
 	if (!strcmp(type,"s")) snprintf(buf,512,"%s",*(char**)out);
+	if (!strcmp(type,"v")) snprintf(buf,512,"%f, %f, %f",((VECTOR3F*)out)->x,((VECTOR3F*)out)->y,((VECTOR3F*)out)->z);
+	if (!strcmp(type,"rv")) snprintf_rv(buf,512,*((RandVector*)out));
 	printf("%s: %s\n",key,buf);
 }
 
