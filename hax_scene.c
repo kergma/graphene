@@ -215,7 +215,7 @@ Scene *scene_create(char *spec)
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
 
-	s->grid=grid_create(s->map,RandFloat_value(&cell_size));
+	s->grid=grid_create(s->map,waves,RandFloat_value(&cell_size));
 	free(scene_name);
 	
 	array_free(waves);

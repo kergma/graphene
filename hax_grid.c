@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "hax_grid.h"
 #include "hax_map.h"
 
@@ -63,7 +64,7 @@ HEXAGON_VERTEX *get_vertex(HEXAGON_VERTEX v, HEXAGON_EDGE *e1, HEXAGON_EDGE *e2)
 	#undef VERTICES_EQ
 }
 
-Grid *grid_create(Map *map, float cell_size)
+Grid *grid_create(Map *map, Array *waves, float cell_size)
 {
 	Array *vertices;
 	Array *edges;
@@ -75,6 +76,7 @@ Grid *grid_create(Map *map, float cell_size)
 	VECTOR3F cell_coord;
 	HEXAGON_VERTEX v, *vertex;
 	GLuint index;
+	GRID_WAVE wave;
 
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
@@ -198,7 +200,21 @@ Grid *grid_create(Map *map, float cell_size)
 	array_free(vertices);
 	array_free(edges);
 
+
 	g->waves=array_create(sizeof(GRID_WAVE));
+	g->amplitudes_sum=0;
+	for (i=0;i<array_count(waves);i++)
+	{
+
+		array_item(waves,i,&wave);
+		wave.period=DOUBLE_PI/wave.period;
+		array_add(g->waves,&wave);
+		g->amplitudes_sum+=fabsf(wave.amplitude);
+		printf("source %f,%f,%f\n",wave.source.x,wave.source.y,wave.source.z);
+		printf("amplitude %f\n",wave.amplitude);
+		printf("length %f\n",wave.length);
+		printf("period %f\n",wave.period);
+	};
 	return g;
 
 

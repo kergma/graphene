@@ -48,7 +48,7 @@ typedef struct tagRandVector {
 RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z);
 VECTOR3F RandVector_value(RandVector *v);
 
-#define D3DX_2PI 6.28f
+#define DOUBLE_PI 6.28f
 #define COS30 0.86602540378f
 #define TAN30 0.5773502691f
 #define SIN30 0.5f

@@ -20,7 +20,7 @@ typedef struct tagGrid
 } Grid;
 
 extern int grid_render(Grid *g);
-Grid *grid_create(Map *map, float cell_size);
+Grid *grid_create(Map *map, Array *waves, float cell_size);
 int grid_free(Grid *g);
 void grid_clear(Grid *g);
 VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc);
