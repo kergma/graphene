@@ -68,7 +68,7 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 {
 	Array *vertices;
 	Array *edges;
-	int i,e;
+	int i,j,e;
 	MapCell *cell;
 	HEXAGON_EDGE *edge,*edge1,*edge2,*edge3,*edge4;
 	MapCell *n;
@@ -77,9 +77,11 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 	HEXAGON_VERTEX v, *vertex;
 	GLuint index;
 	GRID_WAVE wave;
+	GRID_PARAM *param;
 
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
+	memset(g,0,sizeof(Grid));
 
 
 	g->map=map;
@@ -172,10 +174,29 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 	#undef OPPOSITE_EDGE
 	grid_clear(g);
 
+	g->waves=array_create(sizeof(GRID_WAVE));
+	g->amplitudes_sum=0;
+	for (i=0;i<array_count(waves);i++)
+	{
+
+		array_item(waves,i,&wave);
+		wave.period=DOUBLE_PI/wave.period;
+		array_add(g->waves,&wave);
+		g->amplitudes_sum+=fabsf(wave.amplitude);
+	};
+
+	param=g->data=(GRID_PARAM*)calloc(array_count(vertices)*array_count(waves),sizeof(GRID_PARAM));
+
 	g->vertices=array_create(sizeof(GRID_VERTEX));
 	for (i=0;i<array_count(vertices);i++) {
 		array_item(vertices,i,&vertex);
 		add_vertex(g->vertices,vertex->x,0,vertex->z,0xffffff);
+		for (j=0;j<array_count(g->waves);j++)
+		{
+			array_item(g->waves,j,&wave);
+			*param=(GRID_PARAM)VECTOR3F_length(VECTOR3F_sub(VECTOR3F_c(vertex->x,0,vertex->z),wave.source))*DOUBLE_PI/array_count(g->waves);
+			param++;
+		};
 	};
 
 	g->indices=array_create(sizeof(GLuint));
@@ -201,20 +222,6 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 	array_free(edges);
 
 
-	g->waves=array_create(sizeof(GRID_WAVE));
-	g->amplitudes_sum=0;
-	for (i=0;i<array_count(waves);i++)
-	{
-
-		array_item(waves,i,&wave);
-		wave.period=DOUBLE_PI/wave.period;
-		array_add(g->waves,&wave);
-		g->amplitudes_sum+=fabsf(wave.amplitude);
-		printf("source %f,%f,%f\n",wave.source.x,wave.source.y,wave.source.z);
-		printf("amplitude %f\n",wave.amplitude);
-		printf("length %f\n",wave.length);
-		printf("period %f\n",wave.period);
-	};
 	return g;
 
 
@@ -225,6 +232,7 @@ void grid_clear(Grid *g)
 
 int grid_free(Grid *g)
 {
+	free(g->data);
 	array_free(g->waves);
 	array_free(g->indices);
 	array_free(g->vertices);
@@ -234,12 +242,26 @@ int grid_free(Grid *g)
 
 void grid_animate(Grid *g, float delta)
 {
-	int i;
+	int i,j;
+	register float phase;
 	GRID_VERTEX *v=array_data(g->vertices);
+	GRID_PARAM *param=g->data;
+	register int wcount=array_count(g->waves);
+
+	g->time+=delta;
 
 	for (i=0;i<array_count(g->vertices);i++)
 	{
-		v->y=((float)(rand()%10))/100.0f;
+		phase=0;
+		for (j=0;j<wcount;j++) {
+			register GRID_WAVE *wave=(GRID_WAVE*)array_pelement(g->waves,j);
+			phase+=wave->amplitude*sinf(wave->period*g->time-*param);
+			param++;
+		};
+		v->y=phase;
+		phase/=g->amplitudes_sum;
+		/*v->color=animate_color2(g_dwColor1,g_dwColor2,(phase+1)/2);*/
 		v++;
 	};
+
 }

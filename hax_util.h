@@ -20,6 +20,8 @@ typedef struct tagVECTOR3F
 
 VECTOR3F VECTOR3F_c(float x, float y, float z);
 VECTOR3F VECTOR3F_mulfloat(VECTOR3F v, float m);
+VECTOR3F VECTOR3F_sub(VECTOR3F v, VECTOR3F s);
+float VECTOR3F_length(VECTOR3F v);
 
 typedef struct tagRandInt
 {
@@ -91,6 +93,7 @@ unsigned int array_add(Array *a, void *item);
 
 void *array_data(Array *a);
 void array_item(Array *a, unsigned int index, void *item);
+void *array_pelement(Array *a, unsigned int index);
 unsigned int array_count(Array *a);
 unsigned int array_find(Array *a, void *item);
 

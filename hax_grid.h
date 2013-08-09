@@ -2,6 +2,8 @@
 
 #include "hax_map.h"
 
+typedef float GRID_PARAM;
+
 typedef struct tagGRID_WAVE {
 	VECTOR3F source;
 	float amplitude;
@@ -17,6 +19,8 @@ typedef struct tagGrid
 	Array *indices;
 	Array *waves;
 	float amplitudes_sum;
+	GRID_PARAM *data;
+	float time;
 } Grid;
 
 extern int grid_render(Grid *g);

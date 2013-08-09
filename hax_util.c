@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "hax_util.h"
 #include "xlockmore.h"
 
@@ -20,6 +21,17 @@ VECTOR3F VECTOR3F_mulfloat(VECTOR3F v, float m)
 	v.y*=m;
 	v.z*=m;
 	return v;
+}
+VECTOR3F VECTOR3F_sub(VECTOR3F v, VECTOR3F s)
+{
+	v.x-=s.x;
+	v.y-=s.y;
+	v.z-=s.z;
+	return v;
+}
+float VECTOR3F_length(VECTOR3F v)
+{
+	return sqrtf(v.x*v.x+v.y*v.y+v.z*v.z);
 }
 
 void error_exit(const char *message)
@@ -81,6 +93,10 @@ void *array_data(Array *a)
 void array_item(Array *a, unsigned int index, void *item)
 {
 	memcpy(item,a->data+index*a->item_size,a->item_size);
+}
+void *array_pelement(Array *a, unsigned int index)
+{
+	return a->data+index*a->item_size;
 }
 unsigned int array_count(Array *a)
 {
@@ -156,3 +172,4 @@ VECTOR3F RandVector_value(RandVector *v)
 	r.z=RandFloat_value(&v->z);
 	return r;
 }
+
