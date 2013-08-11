@@ -173,3 +173,15 @@ VECTOR3F RandVector_value(RandVector *v)
 	return r;
 }
 
+float float_lerp(float *pOut, float *f1, float *f2, float s)
+{
+	*pOut=*f1+(*f2-*f1)*s;
+	return *pOut;
+}
+
+VECTOR3F VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s)
+{
+	pOut->x=v1->x+(v2->x-v1->x)*s;
+	pOut->y=v1->y+(v2->y-v1->y)*s;
+	pOut->z=v1->z+(v2->z-v1->z)*s;
+}

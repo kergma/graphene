@@ -218,7 +218,7 @@ Scene *scene_create(char *spec)
 	};
 
 
-	s->camera=camera_create(0);
+	s->camera=camera_create();
 
 	parse_spec(&ss,&cam_count,"i","camera count",1);
 	for (i=0;i<cam_count;i++)
@@ -230,7 +230,7 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&time,"rf","camera time",1);
 		parse_spec(&ss,&replicate,"ri","camera replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
-			camera_add_point(s->camera,RandVector_value(&pos),RandVector_value(&target),RandVector_value(&up),DEGREE_TO_RADIAN(RandFloat_value(&fov)),RandFloat_value(&time));
+			camera_add_point(s->camera,RandVector_value(&pos),RandVector_value(&target),RandVector_value(&up),RandFloat_value(&fov),RandFloat_value(&time));
 
 	};
 	

@@ -66,22 +66,9 @@ static double current_time(void)
 
 ENTRYPOINT void reshape_hax (ModeInfo *mi, int width, int height)
 {
-	GLfloat h = (GLfloat) height / (GLfloat) width;
-
-	glViewport (0, 0, (GLint) width, (GLint) height);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective (30.0, 1/h, 1.0, 100.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt( 0.0, 0.0, 30.0,
-			0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0);
-
-	/*camera_render();*/
-	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, width, height);
+	camera_set_viewport(scene->camera,width,height);
+	camera_render(scene->camera);
 }
 
 ENTRYPOINT Bool hax_handle_event (ModeInfo *mi, XEvent *event)
@@ -106,11 +93,9 @@ ENTRYPOINT void init_hax (ModeInfo *mi)
 	hi->scene_spec=cl_scene_spec;
 	hi->glx_context=init_GL(mi);
 
-
-	reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
-
  	scene=scene_create(cl_scene_spec);
 	start_time=current_time();
+	reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
 
 

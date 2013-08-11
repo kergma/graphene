@@ -56,8 +56,6 @@ VECTOR3F RandVector_value(RandVector *v);
 #define TAN30 0.5773502691f
 #define SIN30 0.5f
 
-#define DEGREE_TO_RADIAN(d) ((d)*180/THE_PI)
-
 #define ROUND(x) floorf((x)+0.5f)
 
 
@@ -100,6 +98,8 @@ void *array_pelement(Array *a, unsigned int index);
 unsigned int array_count(Array *a);
 unsigned int array_find(Array *a, void *item);
 
+float float_lerp(float *pOut, float *f1, float *f2, float s);
+VECTOR3F VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s);
 
 #define HAX_UTIL_H
 #endif /* HAX_UTIL_H */
