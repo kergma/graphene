@@ -179,9 +179,20 @@ float float_lerp(float *pOut, float *f1, float *f2, float s)
 	return *pOut;
 }
 
-VECTOR3F VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s)
+void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s)
 {
 	pOut->x=v1->x+(v2->x-v1->x)*s;
 	pOut->y=v1->y+(v2->y-v1->y)*s;
 	pOut->z=v1->z+(v2->z-v1->z)*s;
+}
+
+void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s)
+{
+	float h1=2*s*s*s-3*s*s+1;
+	float h2=-2*s*s*s+3*s*s;
+	float h3=s*s*s-2*s*s+s;
+	float h4=s*s*s-s*s;
+	out->x=h1*v1->x+h2*v2->x+h3*t1->x+h4*t2->x;
+	out->y=h1*v1->y+h2*v2->y+h3*t1->y+h4*t2->y;
+	out->z=h1*v1->z+h2*v2->z+h3*t1->z+h4*t2->z;
 }

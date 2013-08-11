@@ -49,7 +49,8 @@ void camera_animate_linear(Camera *c, float delta)
 
 	array_item(c->points,c->current_index,&current);
 	c->time+=delta;
-	if (c->time>current.time) {
+	if (c->time>current.time)
+	{
 		c->time=0;
 		c->current_index++;
 		if (c->current_index>=array_count(c->points)) c->current_index=0;
@@ -69,9 +70,57 @@ void camera_animate_linear(Camera *c, float delta)
 	float_lerp(&c->fov,&current.fov,&next.fov,s);
 }
 
+void camera_animate_hermite(Camera *c, float delta)
+{
+	CamPoint current,next,next2,prev;
+	int next_index, next2_index, prev_index;
+	float s;
+
+	VECTOR3F pos_t1,target_t1,up_t1, pos_t2,target_t2,up_t2;
+
+	array_item(c->points,c->current_index,&current);
+	c->time+=delta;
+	
+	if (c->time>current.time)
+	{
+		c->time=0;
+		c->current_index++;
+		if (c->current_index>=array_count(c->points)) c->current_index=0;
+		array_item(c->points,c->current_index,&current);
+	};
+
+	next_index=c->current_index+1;
+	if (next_index>=array_count(c->points)) next_index=0;
+
+	next2_index=next_index+1;
+	if (next2_index>=array_count(c->points)) next2_index=0;
+
+	prev_index=c->current_index-1;
+	if (prev_index<0) prev_index=array_count(c->points)-1;
+
+	array_item(c->points,next_index,&next);
+	array_item(c->points,next2_index,&next2);
+	array_item(c->points,prev_index,&prev);
+
+	s=c->time/current.time;
+
+	pos_t1=VECTOR3F_sub(next.pos,current.pos);
+	target_t1=VECTOR3F_sub(next.target,current.target);
+	up_t1=VECTOR3F_sub(next.up,current.up);
+	pos_t2=VECTOR3F_sub(next2.pos,next.pos);
+	target_t2=VECTOR3F_sub(next2.target,next.target);
+	up_t2=VECTOR3F_sub(next2.up,next.up);
+
+	VECTOR3F_hermite(&c->pos,&current.pos,&pos_t1,&next.pos,&pos_t2,s);
+	VECTOR3F_hermite(&c->target,&current.target,&target_t1,&next.target,&target_t2,s);
+	VECTOR3F_hermite(&c->up,&current.up,&up_t1,&next.up,&up_t2,s);
+
+	float_lerp(&c->fov,&current.fov,&next.fov,s);
+}
+
 void camera_animate(Camera *c, float delta)
 {
-	camera_animate_linear(c,delta);
+	camera_animate_hermite(c,delta);
 }
 
 void camera_render(Camera *c)
