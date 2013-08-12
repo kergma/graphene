@@ -108,5 +108,15 @@ float float_lerp(float *pOut, float *f1, float *f2, float s);
 void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s);
 void VECTOR3F_hermite(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s);
 
+typedef void (*ANIMATE_POINT2_CB) (void *context, void *current, void *next, float s);
+typedef struct tagWayAnimation
+{
+	Array *points;
+	int current_index;
+	float time;
+} WayAnimation;
+
+void animate_point2(WayAnimation *a, float delta, ANIMATE_POINT2_CB func, void *context);
+
 #define HAX_UTIL_H
 #endif /* HAX_UTIL_H */

@@ -230,3 +230,37 @@ void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, V
 	out->y=h1*v1->y+h2*v2->y+h3*t1->y+h4*t2->y;
 	out->z=h1*v1->z+h2*v2->z+h3*t1->z+h4*t2->z;
 }
+
+typedef struct tagWayPoint
+{
+	float time;
+} WayPoint;
+
+void animate_point2(WayAnimation *a, float delta, ANIMATE_POINT2_CB func, void *context)
+{
+	WayPoint *current, *next;
+	int next_index;
+	float s;
+
+	if (array_count(a->points)==0) return;
+
+	current=array_pelement(a->points,a->current_index);
+	a->time+=delta;
+	if (a->time>current->time)
+	{
+		a->time=0;
+		a->current_index++;
+		if (a->current_index>=array_count(a->points)) a->current_index=0;
+		current=array_pelement(a->points,a->current_index);
+	};
+
+	next_index=a->current_index+1;
+	if (next_index>=array_count(a->points)) next_index=0;
+	next=array_pelement(a->points,next_index);
+
+	s=a->time/current->time;
+
+	if (func)
+		func(context,current,next,s);
+
+}

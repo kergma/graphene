@@ -6,8 +6,8 @@
 
 typedef struct tagBgPoint
 {
-	GLfloat r,g,b,a;
 	float time;
+	GLfloat r,g,b,a;
 } BgPoint;
 
 typedef struct tagScene
@@ -15,10 +15,8 @@ typedef struct tagScene
 	Map *map;
 	Grid *grid;
 	Camera *camera;
-	Array *bgcolors;
 	GLfloat clr,clg,clb,cla;
-	int current_bg;
-	float bgtime;
+	WayAnimation bganimation;
 } Scene;
 
 int scene_render(Scene *s);

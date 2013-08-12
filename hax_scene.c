@@ -165,12 +165,13 @@ void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time);
 void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time)
 {
 	BgPoint bg;
+	bg.time=time;
 	bg.a=(float)(bgcolor>>24&0xff)/255.f;
 	bg.r=(float)(bgcolor>>16&0xff)/255.f;
 	bg.g=(float)(bgcolor>>8&0xff)/255.f;
 	bg.b=(float)(bgcolor&0xff)/255.f;
-	bg.time=time;
-	array_add(s->bgcolors,&bg);
+	
+	array_add(s->bganimation.points,&bg);
 }
 
 void parse_spec(char **pos, void *out, char *type, char *key, int required);
@@ -229,7 +230,7 @@ Scene *scene_create(char *spec)
 	parse_spec(&ss,&map_size,"ri","map size",1);
 	parse_spec(&ss,&cell_size,"rf","cell size",1);
 
-	s->bgcolors=array_create(sizeof(BgPoint));
+	s->bganimation.points=array_create(sizeof(BgPoint));
 	parse_spec(&ss,&bgcount,"i","bg count",1);
 	for (i=0;i<bgcount;i++)
 	{
@@ -323,45 +324,26 @@ int scene_free(Scene *s)
 	camera_free(s->camera);
 	grid_free(s->grid);
 	map_free(s->map);
-	array_free(s->bgcolors);
+	array_free(s->bganimation.points);
 	free(s);
 	return 0;
 }
 
-void scene_animate_bg(Scene *s, float delta);
-void scene_animate_bg(Scene *s, float delta)
+void animate_bg(void *context, void *current, void *next, float s);
+void animate_bg(void *context, void *current, void *next, float s)
 {
-	BgPoint current,next;
-	int next_index;
-	float z;
+	Scene *scene=(Scene*)context;
+	BgPoint *c=(BgPoint*)current;
+	BgPoint *n=(BgPoint*)next;
 
-	if (array_count(s->bgcolors)==0) return;
-
-	array_item(s->bgcolors,s->current_bg,&current);
-	s->bgtime+=delta;
-	if (s->bgtime>current.time)
-	{
-		s->bgtime=0;
-		s->current_bg++;
-		if (s->current_bg>=array_count(s->bgcolors)) s->current_bg=0;
-		array_item(s->bgcolors,s->current_bg,&current);
-	};
-
-	next_index=s->current_bg+1;
-	if (next_index>=array_count(s->bgcolors)) next_index=0;
-	array_item(s->bgcolors,next_index,&next);
-
-	z=s->bgtime/current.time;
-
-	float_lerp(&s->clr,&current.r,&next.r,z);
-	float_lerp(&s->clg,&current.g,&next.r,z);
-	float_lerp(&s->clb,&current.b,&next.r,z);
-	float_lerp(&s->cla,&current.a,&next.r,z);
+	float_lerp(&scene->clr,&c->r,&n->r,s);
+	float_lerp(&scene->clg,&c->g,&n->g,s);
+	float_lerp(&scene->clb,&c->b,&n->b,s);
+	float_lerp(&scene->cla,&c->a,&n->a,s);
 }
-
 void scene_animate(Scene *s, float delta)
 {
-	scene_animate_bg(s,delta);
+	animate_point2(&s->bganimation,delta,&animate_bg,s);
 	camera_animate(s->camera,delta);
 	grid_animate(s->grid,delta);
 }
