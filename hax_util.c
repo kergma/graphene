@@ -173,6 +173,40 @@ VECTOR3F RandVector_value(RandVector *v)
 	return r;
 }
 
+RandColor RandColor_c2(COLOR a, COLOR b)
+{
+	RandColor v;
+	v.a=a;
+	v.b=b;
+	v.random=1;
+	return v;
+}
+
+RandColor RandColor_c1(COLOR a)
+{
+	RandColor v;
+	v.a=a;
+	v.random=0;
+	return v;
+}
+
+COLOR RandColor_value(RandColor *v)
+{
+	unsigned char a1=v->a>>24&0xff;
+	unsigned char b1=v->b>>24&0xff;
+	unsigned char a2=v->a>>16&0xff;
+	unsigned char b2=v->b>>16&0xff;
+	unsigned char a3=v->a>>8&0xff;
+	unsigned char b3=v->b>>8&0xff;
+	unsigned char a4=v->a&0xff;
+	unsigned char b4=v->b&0xff;
+	unsigned char v1=v->random?(b1-a1+1)*(long int)random()/RAND_MAX+a1:a1;
+	unsigned char v2=v->random?(b2-a2+1)*(long int)random()/RAND_MAX+a2:a2;
+	unsigned char v3=v->random?(b3-a3+1)*(long int)random()/RAND_MAX+a3:a3;
+	unsigned char v4=v->random?(b4-a4+1)*(long int)random()/RAND_MAX+a4:a4;
+	return v1<<24|v2<<16|v3<<8|v4;
+}
+
 float float_lerp(float *pOut, float *f1, float *f2, float s)
 {
 	*pOut=*f1+(*f2-*f1)*s;

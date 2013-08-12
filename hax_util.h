@@ -8,11 +8,6 @@ typedef struct tagHEXAGON_EDGE {
 	HEXAGON_VERTEX *v1, *v2;
 } HEXAGON_EDGE;
 
-typedef struct tagGRID_VERTEX {
-	unsigned int color;
-	float x,y,z;
-} GRID_VERTEX;
-
 typedef struct tagVECTOR3F
 {
 	float x,y,z;
@@ -49,6 +44,17 @@ typedef struct tagRandVector {
 
 RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z);
 VECTOR3F RandVector_value(RandVector *v);
+
+typedef unsigned int COLOR;
+typedef struct tagRandColor
+{
+	COLOR a,b;
+	char random;
+} RandColor;
+
+RandColor RandColor_c2(COLOR a, COLOR b);
+RandColor RandColor_c1(COLOR a);
+COLOR RandColor_value(RandColor *v);
 
 #define THE_PI 3.14159f
 #define DOUBLE_PI 6.28f

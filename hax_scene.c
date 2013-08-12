@@ -80,6 +80,7 @@ int read_value(char **pos, void *out, char *type)
 {
 	int ai,bi;
 	float af,bf;
+	COLOR ac,bc;
 	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s"))
 		return read_atomic_value(pos,out,*type);
 	if (!strcmp(type,"v"))
@@ -114,6 +115,18 @@ int read_value(char **pos, void *out, char *type)
 		return read_value(pos,&((RandVector*)out)->x,"rf") &&
 			read_value(pos,&((RandVector*)out)->y,"rf") &&
 			read_value(pos,&((RandVector*)out)->z,"rf");
+	if (!strcmp(type,"rc"))
+	{
+		if (!read_atomic_value(pos,&ac,'x')) return 0;
+		if (**pos==':')
+		{
+			if (!read_atomic_value(pos,&bc,'x')) return 0;
+			*((RandColor*)out)=RandColor_c2(ac,bc);
+		}
+		else
+			*((RandColor*)out)=RandColor_c1(ac);
+
+	};
 	return 1;
 }
 
@@ -140,6 +153,25 @@ int snprintf_rv(char *str, size_t size, RandVector v)
 	snprintf_rf(z,32,v.z);
 	return snprintf(str,size,"%s, %s, %s",x,y,z);
 }
+int snprintf_rc(char *str, size_t size, RandColor v);
+int snprintf_rc(char *str, size_t size, RandColor v)
+{
+	if (v.random)
+		return snprintf(str,size,"0x%x:0x%x",v.a,v.b);
+	return snprintf(str,size,"0x%x",v.a);
+}
+
+void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time);
+void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time)
+{
+	BgPoint bg;
+	bg.a=(float)(bgcolor>>24&0xff)/255.f;
+	bg.r=(float)(bgcolor>>16&0xff)/255.f;
+	bg.g=(float)(bgcolor>>8&0xff)/255.f;
+	bg.b=(float)(bgcolor&0xff)/255.f;
+	bg.time=time;
+	array_add(s->bgcolors,&bg);
+}
 
 void parse_spec(char **pos, void *out, char *type, char *key, int required);
 void parse_spec(char **pos, void *out, char *type, char *key, int required)
@@ -161,6 +193,7 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 	if (!strcmp(type,"s")) snprintf(buf,512,"%s",*(char**)out);
 	if (!strcmp(type,"v")) snprintf(buf,512,"%f, %f, %f",((VECTOR3F*)out)->x,((VECTOR3F*)out)->y,((VECTOR3F*)out)->z);
 	if (!strcmp(type,"rv")) snprintf_rv(buf,512,*((RandVector*)out));
+	if (!strcmp(type,"rc")) snprintf_rc(buf,512,*((RandColor*)out));
 	printf("%s: %s\n",key,buf);
 }
 
@@ -171,7 +204,8 @@ Scene *scene_create(char *spec)
 	int version=1;
 	RandInt map_size;
 	RandFloat cell_size;
-	unsigned int bgcolor=0x121212;
+	int bgcount;
+	RandColor bgcolor;
 	int wave_count,i,j;
 	RandVector source;
 	RandFloat amplitude, length, period;
@@ -182,8 +216,6 @@ Scene *scene_create(char *spec)
 	RandVector pos,target,up;
 	RandFloat fov,time;
 
-
-
 	char *scene_name=NULL;
 
 	if (!s) error_exit("out of memory");
@@ -192,11 +224,19 @@ Scene *scene_create(char *spec)
 	parse_spec(&ss,&version,"i","version",1);
 	parse_spec(&ss,&map_size,"ri","map size",1);
 	parse_spec(&ss,&cell_size,"rf","cell size",1);
-	parse_spec(&ss,&bgcolor,"x","bgcolor",1);
-	s->cla=(float)(bgcolor>>24&0xff)/255.f;
-	s->clr=(float)(bgcolor>>16&0xff)/255.f;
-	s->clg=(float)(bgcolor>>8&0xff)/255.f;
-	s->clb=(float)(bgcolor&0xff)/255.f;
+
+	s->bgcolors=array_create(sizeof(BgPoint));
+	parse_spec(&ss,&bgcount,"i","bg count",1);
+	for (i=0;i<bgcount;i++)
+	{
+		parse_spec(&ss,&bgcolor,"rc","bgcolor",1);
+		parse_spec(&ss,&time,"rf","bgcolor time",1);
+		parse_spec(&ss,&replicate,"ri","bgcolor replicate",1);
+		for (j=0;j<RandInt_value(&replicate)+1;j++)
+		{
+			scene_add_bgcolor(s,RandColor_value(&bgcolor),RandFloat_value(&time));
+		};
+	};
 
 	waves=array_create(sizeof(GRID_WAVE));
 	parse_spec(&ss,&wave_count,"i","wave count",1);
@@ -263,12 +303,45 @@ int scene_free(Scene *s)
 	camera_free(s->camera);
 	grid_free(s->grid);
 	map_free(s->map);
+	array_free(s->bgcolors);
 	free(s);
 	return 0;
 }
 
+void scene_animate_bg(Scene *s, float delta);
+void scene_animate_bg(Scene *s, float delta)
+{
+	BgPoint current,next;
+	int next_index;
+	float z;
+
+	if (array_count(s->bgcolors)==0) return;
+
+	array_item(s->bgcolors,s->current_bg,&current);
+	s->bgtime+=delta;
+	if (s->bgtime>current.time)
+	{
+		s->bgtime=0;
+		s->current_bg++;
+		if (s->current_bg>=array_count(s->bgcolors)) s->current_bg=0;
+		array_item(s->bgcolors,s->current_bg,&current);
+	};
+
+	next_index=s->current_bg+1;
+	if (next_index>=array_count(s->bgcolors)) next_index=0;
+	array_item(s->bgcolors,next_index,&next);
+
+	z=s->bgtime/current.time;
+
+	float_lerp(&s->clr,&current.r,&next.r,z);
+	float_lerp(&s->clg,&current.g,&next.r,z);
+	float_lerp(&s->clb,&current.b,&next.r,z);
+	float_lerp(&s->cla,&current.a,&next.r,z);
+}
+
 void scene_animate(Scene *s, float delta)
 {
+	scene_animate_bg(s,delta);
 	camera_animate(s->camera,delta);
 	grid_animate(s->grid,delta);
 }

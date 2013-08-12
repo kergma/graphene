@@ -14,6 +14,12 @@
 #include "hax_grid.h"
 #include "hax_map.h"
 
+typedef struct tagGRID_VERTEX {
+	unsigned int color;
+	float x,y,z;
+} GRID_VERTEX;
+
+
 int grid_render(Grid *g)
 {
 	glBegin(GL_LINES);
