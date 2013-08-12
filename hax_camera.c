@@ -47,6 +47,8 @@ void camera_animate_linear(Camera *c, float delta)
 	int next_index;
 	float s;
 
+	if (array_count(c->points)==0) return;
+
 	array_item(c->points,c->current_index,&current);
 	c->time+=delta;
 	if (c->time>current.time)
@@ -77,6 +79,8 @@ void camera_animate_hermite(Camera *c, float delta)
 	float s;
 
 	VECTOR3F pos_t1,target_t1,up_t1, pos_t2,target_t2,up_t2;
+
+	if (array_count(c->points)==0) return;
 
 	array_item(c->points,c->current_index,&current);
 	c->time+=delta;
