@@ -70,7 +70,7 @@ HEXAGON_VERTEX *get_vertex(HEXAGON_VERTEX v, HEXAGON_EDGE *e1, HEXAGON_EDGE *e2)
 	#undef VERTICES_EQ
 }
 
-Grid *grid_create(Map *map, Array *waves, float cell_size)
+Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 {
 	Array *vertices;
 	Array *edges;
@@ -84,6 +84,7 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 	GLuint index;
 	GRID_WAVE wave;
 	GRID_PARAM *param;
+	ColorPoint color;
 
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
@@ -191,6 +192,13 @@ Grid *grid_create(Map *map, Array *waves, float cell_size)
 		g->amplitudes_sum+=fabsf(wave.amplitude);
 	};
 
+	g->colors=array_create(sizeof(ColorPoint));
+	for (i=0;i<array_count(colors);i++)
+	{
+		array_item(colors,i,&color);
+		array_add(g->colors,&color);
+	};
+
 	param=g->data=(GRID_PARAM*)calloc(array_count(vertices)*array_count(waves),sizeof(GRID_PARAM));
 
 	g->vertices=array_create(sizeof(GRID_VERTEX));
@@ -239,6 +247,7 @@ void grid_clear(Grid *g)
 int grid_free(Grid *g)
 {
 	free(g->data);
+	array_free(g->colors);
 	array_free(g->waves);
 	array_free(g->indices);
 	array_free(g->vertices);

@@ -215,6 +215,10 @@ Scene *scene_create(char *spec)
 	int cam_count=0;
 	RandVector pos,target,up;
 	RandFloat fov,time;
+	int color_count;
+	Array *colors;
+	RandColor color1,color2;
+	ColorPoint color;
 
 	char *scene_name=NULL;
 
@@ -233,8 +237,23 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&time,"rf","bgcolor time",1);
 		parse_spec(&ss,&replicate,"ri","bgcolor replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
-		{
 			scene_add_bgcolor(s,RandColor_value(&bgcolor),RandFloat_value(&time));
+	};
+
+	colors=array_create(sizeof(ColorPoint));
+	parse_spec(&ss,&color_count,"i","color count",1);
+	for (i=0;i<color_count;i++)
+	{
+		parse_spec(&ss,&color1,"rc","color1",1);
+		parse_spec(&ss,&color2,"rc","color2",1);
+		parse_spec(&ss,&time,"rf","color time",1);
+		parse_spec(&ss,&replicate,"ri","color replicate",1);
+		for (j=0;j<RandInt_value(&replicate)+1;j++)
+		{
+			color.color1=RandColor_value(&color1);
+			color.color2=RandColor_value(&color2);
+			color.time=RandFloat_value(&time);
+			array_add(colors,&color);
 		};
 	};
 
@@ -279,9 +298,10 @@ Scene *scene_create(char *spec)
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
 
-	s->grid=grid_create(s->map,waves,RandFloat_value(&cell_size));
+	s->grid=grid_create(s->map,RandFloat_value(&cell_size),waves,colors);
 	free(scene_name);
 	
+	array_free(colors);
 	array_free(waves);
 
 	return s;

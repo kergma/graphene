@@ -4,7 +4,14 @@
 
 typedef float GRID_PARAM;
 
-typedef struct tagGRID_WAVE {
+typedef struct tagColorPoint
+{
+	COLOR color1,color2;
+	float time;
+} ColorPoint;
+
+typedef struct tagGRID_WAVE
+{
 	VECTOR3F source;
 	float amplitude;
 	float length;
@@ -19,12 +26,13 @@ typedef struct tagGrid
 	Array *indices;
 	Array *waves;
 	float amplitudes_sum;
+	Array *colors;
 	GRID_PARAM *data;
 	float time;
 } Grid;
 
 extern int grid_render(Grid *g);
-Grid *grid_create(Map *map, Array *waves, float cell_size);
+Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors);
 int grid_free(Grid *g);
 void grid_clear(Grid *g);
 VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc);

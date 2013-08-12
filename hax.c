@@ -43,7 +43,7 @@ static XrmOptionDescRec opts[] =
 
 static argtype vars[] =
 {
-	{&cl_scene_spec, "scene",  "Scene specification",  "1 17 0.2 bg 1 0x808080 10 0 wav 1 0 0 0 0.1 1 1 0 cam 1 3 3 3 0 0 0 0 1 0 45 10 0", t_String},
+	{&cl_scene_spec, "scene",  "Scene specification",  "1 17 0.2 bg 1 0x808080 10 0 color 1 0xffffff 0xffffff 10 0 wav 1 0 0 0 0.1 1 1 0 cam 1 3 3 3 0 0 0 0 1 0 45 10 0", t_String},
 };
 
 ENTRYPOINT ModeSpecOpt hax_opts = {countof(opts), opts, countof(vars), vars, NULL};
