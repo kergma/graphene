@@ -41,37 +41,6 @@ void camera_set_viewport(Camera *c, int width, int height)
 	c->aspect=(float)width/(float)height;
 }
 
-void camera_animate_linear(Camera *c, float delta)
-{
-	CamPoint current,next;
-	int next_index;
-	float s;
-
-	if (array_count(c->points)==0) return;
-
-	array_item(c->points,c->current_index,&current);
-	c->time+=delta;
-	if (c->time>current.time)
-	{
-		c->time=0;
-		c->current_index++;
-		if (c->current_index>=array_count(c->points)) c->current_index=0;
-		array_item(c->points,c->current_index,&current);
-	};
-
-	next_index=c->current_index+1;
-	if (next_index>=array_count(c->points)) next_index=0;
-	array_item(c->points,next_index,&next);
-
-	s=c->time/current.time;
-
-	VECTOR3F_lerp(&c->pos,&current.pos,&next.pos,s);
-	VECTOR3F_lerp(&c->target,&current.target,&next.target,s);
-	VECTOR3F_lerp(&c->up,&current.up,&next.up,s);
-
-	float_lerp(&c->fov,&current.fov,&next.fov,s);
-}
-
 void camera_animate_hermite(Camera *c, float delta)
 {
 	CamPoint current,next,next2,prev;
