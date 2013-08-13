@@ -107,6 +107,7 @@ unsigned int array_find(Array *a, void *item);
 float float_lerp(float *pOut, float *f1, float *f2, float s);
 void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s);
 void VECTOR3F_hermite(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s);
+void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s);
 
 typedef void (*ANIMATE_POINT2_CB) (void *context, void *current, void *next, float s);
 typedef struct tagWayAnimation

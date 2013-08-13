@@ -6,8 +6,8 @@ typedef float GRID_PARAM;
 
 typedef struct tagColorPoint
 {
-	COLOR color1,color2;
 	float time;
+	COLOR color1,color2;
 } ColorPoint;
 
 typedef struct tagGRID_WAVE
@@ -26,9 +26,10 @@ typedef struct tagGrid
 	Array *indices;
 	Array *waves;
 	float amplitudes_sum;
-	Array *colors;
 	GRID_PARAM *data;
 	float time;
+	WayAnimation color_animation;
+	COLOR color1,color2;
 } Grid;
 
 extern int grid_render(Grid *g);

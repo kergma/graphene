@@ -192,11 +192,11 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 		g->amplitudes_sum+=fabsf(wave.amplitude);
 	};
 
-	g->colors=array_create(sizeof(ColorPoint));
+	g->color_animation.points=array_create(sizeof(ColorPoint));
 	for (i=0;i<array_count(colors);i++)
 	{
 		array_item(colors,i,&color);
-		array_add(g->colors,&color);
+		array_add(g->color_animation.points,&color);
 	};
 
 	param=g->data=(GRID_PARAM*)calloc(array_count(vertices)*array_count(waves),sizeof(GRID_PARAM));
@@ -247,7 +247,7 @@ void grid_clear(Grid *g)
 int grid_free(Grid *g)
 {
 	free(g->data);
-	array_free(g->colors);
+	array_free(g->color_animation.points);
 	array_free(g->waves);
 	array_free(g->indices);
 	array_free(g->vertices);
@@ -255,6 +255,16 @@ int grid_free(Grid *g)
 	return 0;
 }
 
+void animate_colors(void *context, void *current, void *next, float s);
+void animate_colors(void *context, void *current, void *next, float s)
+{
+	Grid *g=(Grid*)context;
+	ColorPoint *c=(ColorPoint*)current;
+	ColorPoint *n=(ColorPoint*)next;
+
+	COLOR_lerp(&g->color1,c->color1,n->color1,s);
+	COLOR_lerp(&g->color2,c->color2,n->color2,s);
+}
 void grid_animate(Grid *g, float delta)
 {
 	int i,j;
@@ -263,8 +273,11 @@ void grid_animate(Grid *g, float delta)
 	GRID_PARAM *param=g->data;
 	register int wcount=array_count(g->waves);
 
+	animate_point2(&g->color_animation,delta,&animate_colors,g);
+
 	g->time+=delta;
 
+	/*printf("c1 0x%x c2 0x%x\n",g->color1,g->color2);*/
 	for (i=0;i<array_count(g->vertices);i++)
 	{
 		phase=0;
@@ -275,7 +288,7 @@ void grid_animate(Grid *g, float delta)
 		};
 		v->y=phase;
 		phase/=g->amplitudes_sum;
-		/*v->color=animate_color2(g_dwColor1,g_dwColor2,(phase+1)/2);*/
+		COLOR_lerp(&v->color,g->color1,g->color2,(phase+1)/2);
 		v++;
 	};
 

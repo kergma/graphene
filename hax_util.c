@@ -220,6 +220,7 @@ void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s)
 	pOut->z=v1->z+(v2->z-v1->z)*s;
 }
 
+
 void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s)
 {
 	float h1=2*s*s*s-3*s*s+1;
@@ -230,6 +231,24 @@ void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, V
 	out->y=h1*v1->y+h2*v2->y+h3*t1->y+h4*t2->y;
 	out->z=h1*v1->z+h2*v2->z+h3*t1->z+h4*t2->z;
 }
+
+void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s)
+{
+	unsigned char a1,r1,g1,b1,a2,r2,g2,b2,a,r,g,b;
+	a1=(unsigned char)(c1>>24);
+	r1=(unsigned char)(c1>>16);
+	g1=(unsigned char)(c1>>8);
+	b1=(unsigned char)(c1);
+	a2=(unsigned char)(c2>>24);
+	r2=(unsigned char)(c2>>16);
+	g2=(unsigned char)(c2>>8);
+	b2=(unsigned char)(c2);
+	a=(unsigned char)(a1+(a2-a1)*s);
+	r=(unsigned char)(r1+(r2-r1)*s);
+	g=(unsigned char)(g1+(g2-g1)*s);
+	b=(unsigned char)(b1+(b2-b1)*s);
+	*out=(a<<24)+(r<<16)+(g<<8)+b;
+};
 
 typedef struct tagWayPoint
 {
