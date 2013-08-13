@@ -55,6 +55,8 @@ typedef struct tagRandColor
 RandColor RandColor_c2(COLOR a, COLOR b);
 RandColor RandColor_c1(COLOR a);
 COLOR RandColor_value(RandColor *v);
+COLOR COLOR_swaprb(COLOR c);
+
 
 #define THE_PI 3.14159f
 #define DOUBLE_PI 6.28f

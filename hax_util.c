@@ -207,6 +207,15 @@ COLOR RandColor_value(RandColor *v)
 	return v1<<24|v2<<16|v3<<8|v4;
 }
 
+COLOR COLOR_swaprb(COLOR c)
+{
+	unsigned char a=c>>24&0xff;
+	unsigned char r=c>>16&0xff;
+	unsigned char g=c>>8&0xff;
+	unsigned char b=c&0xff;
+	return a<<24|b<<16|g<<8|r;
+}
+
 float float_lerp(float *pOut, float *f1, float *f2, float s)
 {
 	*pOut=*f1+(*f2-*f1)*s;

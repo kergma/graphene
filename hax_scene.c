@@ -87,6 +87,16 @@ int read_value(char **pos, void *out, char *type)
 		return read_atomic_value(pos,&((VECTOR3F*)out)->x,'f') && 
 			read_atomic_value(pos,&((VECTOR3F*)out)->y,'f') && 
 			read_atomic_value(pos,&((VECTOR3F*)out)->z,'f');
+	if (!strcmp(type,"c"))
+	{
+		if (read_atomic_value(pos,out,'x'))
+		{
+			*((COLOR*)out)=COLOR_swaprb(*((COLOR*)out));
+			return 1;
+		}
+		else
+			return 0;
+	};
 	if (!strcmp(type,"ri"))
 	{
 		if (!read_atomic_value(pos,&ai,'i')) return 0;
@@ -117,10 +127,10 @@ int read_value(char **pos, void *out, char *type)
 			read_value(pos,&((RandVector*)out)->z,"rf");
 	if (!strcmp(type,"rc"))
 	{
-		if (!read_atomic_value(pos,&ac,'x')) return 0;
+		if (!read_value(pos,&ac,"c")) return 0;
 		if (**pos==':')
 		{
-			if (!read_atomic_value(pos,&bc,'x')) return 0;
+			if (!read_value(pos,&bc,"c")) return 0;
 			*((RandColor*)out)=RandColor_c2(ac,bc);
 		}
 		else
@@ -167,9 +177,9 @@ void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time)
 	BgPoint bg;
 	bg.time=time;
 	bg.a=(float)(bgcolor>>24&0xff)/255.f;
-	bg.r=(float)(bgcolor>>16&0xff)/255.f;
+	bg.b=(float)(bgcolor>>16&0xff)/255.f;
 	bg.g=(float)(bgcolor>>8&0xff)/255.f;
-	bg.b=(float)(bgcolor&0xff)/255.f;
+	bg.r=(float)(bgcolor&0xff)/255.f;
 	
 	array_add(s->bganimation.points,&bg);
 }
