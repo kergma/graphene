@@ -215,7 +215,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 		for (j=0;j<array_count(g->waves);j++)
 		{
 			array_item(g->waves,j,&wave);
-			*param=(GRID_PARAM)VECTOR3F_length(VECTOR3F_sub(VECTOR3F_c(vertex->x,0,vertex->z),wave.source))*DOUBLE_PI/array_count(g->waves);
+			*param=(GRID_PARAM)VECTOR3F_length(VECTOR3F_sub(VECTOR3F_c(vertex->x,0,vertex->z),wave.source))*DOUBLE_PI/wave.length;
 			param++;
 		};
 	};
