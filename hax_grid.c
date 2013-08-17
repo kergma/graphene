@@ -73,7 +73,7 @@ HEXAGON_VERTEX *get_vertex(HEXAGON_VERTEX v, HEXAGON_EDGE *e1, HEXAGON_EDGE *e2)
 int vertices_ordering(void *a, void *b);
 int vertices_ordering(void *a, void *b)
 {
-	return (long int)*a-(long int)*b;
+	return (long int)*(void**)a-(long int)*(void**)b;
 }
 
 Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
@@ -284,7 +284,6 @@ void grid_animate(Grid *g, float delta)
 
 	g->time+=delta;
 
-	/*printf("c1 0x%x c2 0x%x\n",g->color1,g->color2);*/
 	for (i=0;i<array_count(g->vertices);i++)
 	{
 		phase=0;

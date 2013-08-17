@@ -44,7 +44,7 @@ Array *array_create(int item_size)
 {
 	Array *a=NEW(Array);
 	if (!a) error_exit("out of memory");
-	memset(a,0,sizeof(Array*));
+	memset(a,0,sizeof(Array));
 	a->item_size=item_size;
 	array_reset(a);
 	return a;
@@ -158,7 +158,6 @@ unsigned int array_count(Array *a)
 unsigned int array_find(Array *a, void *item)
 {
 	unsigned int i;
-/*
 	if (a->ordering)
 	{
 		if (array_find_index(a,&i,item))
@@ -166,7 +165,6 @@ unsigned int array_find(Array *a, void *item)
 		else
 			return -1;
 	};
-*/
 	for (i=0;i<array_count(a);i++)
 		if (memcmp(item,a->data+i*a->item_size,a->item_size)==0) return i;
 	return -1;
