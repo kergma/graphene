@@ -76,7 +76,7 @@ int vertices_ordering(void *a, void *b)
 	return (long int)*(void**)a-(long int)*(void**)b;
 }
 
-Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
+Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float contrast)
 {
 	Array *vertices;
 	Array *edges;
@@ -199,6 +199,9 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 		g->amplitudes_sum+=fabsf(wave.amplitude);
 	};
 
+	g->contrast=contrast;
+	g->cit=(CIT_EL*)calloc(CIT_COUNT,sizeof(CIT_EL));
+	initialize_cit(g->cit,g->contrast);
 	g->color_animation.points=array_create(sizeof(ColorPoint));
 	for (i=0;i<array_count(colors);i++)
 	{
@@ -254,6 +257,7 @@ void grid_clear(Grid *g)
 int grid_free(Grid *g)
 {
 	free(g->data);
+	free(g->cit);
 	array_free(g->color_animation.points);
 	array_free(g->waves);
 	array_free(g->indices);
@@ -289,12 +293,12 @@ void grid_animate(Grid *g, float delta)
 		phase=0;
 		for (j=0;j<wcount;j++) {
 			register GRID_WAVE *wave=(GRID_WAVE*)array_pelement(g->waves,j);
-			phase+=wave->amplitude*sinf(wave->period*g->time-*param);
+			phase+=wave->amplitude*fast_sin(wave->period*g->time-*param);
 			param++;
 		};
 		v->y=phase;
 		phase/=g->amplitudes_sum;
-		COLOR_lerp(&v->color,g->color1,g->color2,(phase+1)/2);
+		COLOR_cit(&v->color,g->color1,g->color2,(phase+1)/2,g->cit);
 		v++;
 	};
 

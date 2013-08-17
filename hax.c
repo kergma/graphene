@@ -89,6 +89,7 @@ ENTRYPOINT void init_hax (ModeInfo *mi)
 		if (hax_info==NULL) error_exit("out of memory");
 	};
 
+	init_fast_math();
 	hi=&hax_info[MI_SCREEN(mi)];
 	hi->scene_spec=cl_scene_spec;
 	hi->glx_context=init_GL(mi);

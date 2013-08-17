@@ -29,11 +29,13 @@ typedef struct tagGrid
 	GRID_PARAM *data;
 	float time;
 	WayAnimation color_animation;
+	float contrast;
+	CIT_EL *cit;
 	COLOR color1,color2;
 } Grid;
 
 extern int grid_render(Grid *g);
-Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors);
+Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float contrast);
 int grid_free(Grid *g);
 void grid_clear(Grid *g);
 VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc);

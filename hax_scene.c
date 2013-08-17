@@ -228,6 +228,7 @@ Scene *scene_create(char *spec)
 	RandFloat fov,time;
 	int color_count;
 	Array *colors;
+	RandFloat contrast;
 	RandColor color1,color2;
 	ColorPoint color;
 
@@ -251,6 +252,7 @@ Scene *scene_create(char *spec)
 			scene_add_bgcolor(s,RandColor_value(&bgcolor),RandFloat_value(&time));
 	};
 
+	parse_spec(&ss,&contrast,"rf","color contrast",1);
 	colors=array_create(sizeof(ColorPoint));
 	parse_spec(&ss,&color_count,"i","color count",1);
 	for (i=0;i<color_count;i++)
@@ -309,7 +311,7 @@ Scene *scene_create(char *spec)
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
 
-	s->grid=grid_create(s->map,RandFloat_value(&cell_size),waves,colors);
+	s->grid=grid_create(s->map,RandFloat_value(&cell_size),waves,colors,RandFloat_value(&contrast));
 	free(scene_name);
 	
 	array_free(colors);

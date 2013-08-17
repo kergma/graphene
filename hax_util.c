@@ -317,6 +317,36 @@ void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s)
 	b=(unsigned char)(b1+(b2-b1)*s);
 	*out=(a<<24)+(r<<16)+(g<<8)+b;
 }
+void initialize_cit(CIT_EL *cit, float contrast)
+{
+	int i;
+	float x,f;
+	for (i=0;i<CIT_COUNT;i++)
+	{
+		x=(float)i;
+		f=contrast*x+127.5f*(1-contrast);
+		if (f<0) f=0;
+		if (f>CIT_COUNT-1) f=CIT_COUNT-1;
+		cit[i]=fast_round(f);
+	};
+}
+void COLOR_cit(COLOR *out, COLOR c1, COLOR c2, float s, CIT_EL *cit)
+{
+	unsigned char a1,r1,g1,b1,a2,r2,g2,b2,a,r,g,b;
+	a1=(unsigned char)(c1>>24);
+	r1=(unsigned char)(c1>>16);
+	g1=(unsigned char)(c1>>8);
+	b1=(unsigned char)(c1);
+	a2=(unsigned char)(c2>>24);
+	r2=(unsigned char)(c2>>16);
+	g2=(unsigned char)(c2>>8);
+	b2=(unsigned char)(c2);
+	a=(unsigned char)(a1+(a2-a1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
+	r=(unsigned char)(r1+(r2-r1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
+	g=(unsigned char)(g1+(g2-g1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
+	b=(unsigned char)(b1+(b2-b1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
+	*out=(a<<24)+(r<<16)+(g<<8)+b;
+}
 
 typedef struct tagWayPoint
 {
@@ -351,3 +381,59 @@ void animate_point2(WayAnimation *a, float delta, ANIMATE_POINT2_CB func, void *
 		func(context,current,next,s);
 
 }
+
+typedef union tagINTFLOAT
+{
+	int i;
+	float f;
+} INTFLOAT;
+
+INTFLOAT positive_bias={(23+127)<<23};
+INTFLOAT negative_bias={((23+127)<<23)+(1<<22)};
+
+int fast_round(float f)
+{
+	INTFLOAT n;
+	n.f=f;
+	if (n.i>0) {
+		n.f+=positive_bias.f;
+		n.i-=positive_bias.i;
+	} else {
+		n.f+=negative_bias.f;
+		n.i-=negative_bias.i;
+	};
+	return n.i;
+}
+
+float fast_abs(float f)
+{
+	INTFLOAT n;
+	n.f=f;
+	n.i&=0x7fffffff;
+	return n.f;
+}
+
+#define SIN_ENTRIES 256
+float sin_table[SIN_ENTRIES];
+
+
+#define ftoi_bias 12582912.0f
+
+float fast_sin(float x)
+{
+	int i;
+	INTFLOAT tmp;
+	tmp.f=x*(256.0f/DOUBLE_PI)+ftoi_bias;
+	i=tmp.i&255;
+	return sin_table[i];
+}
+
+
+
+void init_fast_math(void)
+{
+	int i;
+	for (i=0;i<SIN_ENTRIES;i++)
+		sin_table[i]=sinf(i*DOUBLE_PI/(float)SIN_ENTRIES);
+}
+
