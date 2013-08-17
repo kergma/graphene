@@ -70,6 +70,12 @@ HEXAGON_VERTEX *get_vertex(HEXAGON_VERTEX v, HEXAGON_EDGE *e1, HEXAGON_EDGE *e2)
 	#undef VERTICES_EQ
 }
 
+int vertices_ordering(void *a, void *b);
+int vertices_ordering(void *a, void *b)
+{
+	return (long int)*a-(long int)*b;
+}
+
 Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 {
 	Array *vertices;
@@ -95,6 +101,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors)
 	g->cell_size=cell_size;
 
 	vertices=array_create(sizeof(HEXAGON_VERTEX*));
+	vertices->ordering=&vertices_ordering;
 	edges=array_create(sizeof(HEXAGON_EDGE*));
 
 	#define OPPOSITE_EDGE(e) ((e)+3>5?(e)-3:(e)+3)

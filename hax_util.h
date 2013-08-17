@@ -84,6 +84,8 @@ void error_exit(const char *message);
 
 #define NEW(t) ((t*)calloc(1,sizeof(t)))
 
+typedef int (*ORDEDING_FUNC) (void *item1, void *item2);
+
 typedef struct tagArray
 {
 	int count;
@@ -92,6 +94,7 @@ typedef struct tagArray
 	int item_size;
 	int initial_size;
 	int growby_size;
+	ORDEDING_FUNC ordering;
 } Array;
 
 Array *array_create(int item_size);
@@ -99,6 +102,7 @@ void array_reset(Array *a);
 void array_free(Array *a);
 void array_grow(Array *a);
 unsigned int array_add(Array *a, void *item);
+unsigned int array_insert(Array *a, void *item, unsigned int index);
 
 void *array_data(Array *a);
 void array_item(Array *a, unsigned int index, void *item);

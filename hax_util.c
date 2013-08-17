@@ -77,10 +77,63 @@ void array_grow(Array *a)
 	a->data=new_data;
 	a->size=new_size;
 }
+
+unsigned int array_find_index(Array *a, unsigned int *index, void *item);
+unsigned int array_find_index(Array *a, unsigned int *index, void *item)
+{
+	unsigned i1=0,i2=a->count-1,i=0;
+	int diff;
+	
+	void *itema=a->data+i1*a->item_size,*itemb=a->data+i2*a->item_size,*m;
+	*index=i2+1;
+
+	diff=a->ordering(item,itemb);
+	if (diff>0) return 0;
+	if (diff==0) {*index=i2;return 1;}
+	*index=i1;
+	diff=a->ordering(itema,item);
+	if (diff>0) return 0;
+	if (diff==0) return 1;
+
+	while (i2-i1>1 && diff)
+	{
+		i=(i1+i2)/2;
+		m=a->data+i*a->item_size;
+		diff=a->ordering(m,item);
+		if (diff<=0)
+		{
+			i1=i; itema=m;
+		} else {
+			i2=i; itemb=m;
+		};
+	};
+	if (diff) {
+		*index=i2;
+		return 0;
+	}
+	*index=i;
+	return 1;
+}
+
 unsigned int array_add(Array *a, void *item)
 {
+	unsigned int index;
 	if (a->count>=a->size) array_grow(a);
+	if (a->ordering)
+	{
+		array_find_index(a,&index,item);
+		return array_insert(a,item,index);
+	};
 	memcpy(a->data+a->count*a->item_size,item,a->item_size);
+	a->count++;
+	return a->count;
+}
+unsigned int array_insert(Array *a, void *item, unsigned int index)
+{
+	if (a->count>=a->size) array_grow(a);
+	if (a->count>index)
+		memmove(a->data+(index+1)*a->item_size,a->data+index*a->item_size,(a->count-index)*a->item_size);
+	memcpy(a->data+index*a->item_size,item,a->item_size);
 	a->count++;
 	return a->count;
 }
@@ -105,7 +158,15 @@ unsigned int array_count(Array *a)
 unsigned int array_find(Array *a, void *item)
 {
 	unsigned int i;
-
+/*
+	if (a->ordering)
+	{
+		if (array_find_index(a,&i,item))
+			return i;
+		else
+			return -1;
+	};
+*/
 	for (i=0;i<array_count(a);i++)
 		if (memcmp(item,a->data+i*a->item_size,a->item_size)==0) return i;
 	return -1;
@@ -257,7 +318,7 @@ void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s)
 	g=(unsigned char)(g1+(g2-g1)*s);
 	b=(unsigned char)(b1+(b2-b1)*s);
 	*out=(a<<24)+(r<<16)+(g<<8)+b;
-};
+}
 
 typedef struct tagWayPoint
 {
