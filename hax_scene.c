@@ -16,6 +16,8 @@
 #include "hax_camera.h"
 #include "hax_grid.h"
 
+void animate_bg(void *context, void *current, void *next, float s);
+
 int read_atomic_value(char **pos, void *out, char type);
 int read_atomic_value(char **pos, void *out, char type)
 {
@@ -326,6 +328,13 @@ Scene *scene_create(char *spec)
 	else
 		glEnable(GL_DEPTH_TEST);
 
+	s->enable_grid_animation=!(flags&SF_STATIC);
+	if (!s->enable_grid_animation)
+	{
+		animate_point2(&s->bganimation,0,&animate_bg,s);
+		grid_animate(s->grid,0);
+	};
+
 	return s;
 }
 
@@ -350,7 +359,6 @@ int scene_free(Scene *s)
 	return 0;
 }
 
-void animate_bg(void *context, void *current, void *next, float s);
 void animate_bg(void *context, void *current, void *next, float s)
 {
 	Scene *scene=(Scene*)context;
@@ -366,5 +374,6 @@ void scene_animate(Scene *s, float delta)
 {
 	animate_point2(&s->bganimation,delta,&animate_bg,s);
 	camera_animate(s->camera,delta);
-	grid_animate(s->grid,delta);
+	if (s->enable_grid_animation)
+		grid_animate(s->grid,delta);
 }

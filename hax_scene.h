@@ -17,6 +17,7 @@ typedef struct tagScene
 	Camera *camera;
 	GLfloat clr,clg,clb,cla;
 	WayAnimation bganimation;
+	int enable_grid_animation;
 } Scene;
 
 int scene_render(Scene *s);
