@@ -208,11 +208,14 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 	printf("%s: %s\n",key,buf);
 }
 
+#define SF_STATIC 0x1
+#define SF_PLAIN 0x2
 Scene *scene_create(char *spec)
 {
 	Scene *s=NEW(Scene);
 	char *ss=spec;
 	int version=1;
+	unsigned int flags;
 	RandInt map_size;
 	RandFloat cell_size;
 	int bgcount;
@@ -238,6 +241,7 @@ Scene *scene_create(char *spec)
 	memset(s,0,sizeof(Scene));
 
 	parse_spec(&ss,&version,"i","version",1);
+	parse_spec(&ss,&flags,"x","flags",1);
 	parse_spec(&ss,&map_size,"ri","map size",1);
 	parse_spec(&ss,&cell_size,"rf","cell size",1);
 
@@ -316,6 +320,11 @@ Scene *scene_create(char *spec)
 	
 	array_free(colors);
 	array_free(waves);
+
+	if ((flags&SF_PLAIN)!=0)
+		glDisable(GL_DEPTH_TEST);
+	else
+		glEnable(GL_DEPTH_TEST);
 
 	return s;
 }
