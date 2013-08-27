@@ -198,6 +198,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float 
 		array_add(g->waves,&wave);
 		g->amplitudes_sum+=fabsf(wave.amplitude);
 	};
+	if (g->amplitudes_sum==0) g->amplitudes_sum=1;
 
 	g->contrast=contrast;
 	g->cit=(CIT_EL*)calloc(CIT_COUNT,sizeof(CIT_EL));
