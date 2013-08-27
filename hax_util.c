@@ -85,6 +85,11 @@ unsigned int array_find_index(Array *a, unsigned int *index, void *item)
 	int diff;
 	
 	void *itema=a->data+i1*a->item_size,*itemb=a->data+i2*a->item_size,*m;
+	if (a->count==0)
+	{
+		*index=0;
+		return 0;
+	};
 	*index=i2+1;
 
 	diff=a->ordering(item,itemb);
