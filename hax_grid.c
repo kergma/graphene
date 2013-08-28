@@ -257,9 +257,16 @@ void grid_clear(Grid *g)
 
 int grid_free(Grid *g)
 {
+	int i;
+	GRID_WAVE wave;
 	free(g->data);
 	free(g->cit);
 	array_free(g->color_animation.points);
+	for (i=0;i<array_count(g->waves);i++)
+	{
+		array_item(g->waves,i,&wave);
+		array_free(wave.color_animation.points);
+	};
 	array_free(g->waves);
 	array_free(g->indices);
 	array_free(g->vertices);

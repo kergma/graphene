@@ -222,10 +222,10 @@ Scene *scene_create(char *spec)
 	RandFloat cell_size;
 	int bgcount;
 	RandColor bgcolor;
-	int wave_count,i,j;
+	int wave_count,i,j,k;
 	RandVector source;
 	RandFloat amplitude, length, period;
-	RandInt replicate;
+	RandInt replicate,wave_color_replicate;
 	Array *waves;
 	GRID_WAVE wave;
 	int cam_count=0;
@@ -258,15 +258,15 @@ Scene *scene_create(char *spec)
 			scene_add_bgcolor(s,RandColor_value(&bgcolor),RandFloat_value(&time));
 	};
 
-	parse_spec(&ss,&contrast,"rf","color contrast",1);
+	parse_spec(&ss,&contrast,"rf","grid color contrast",1);
 	colors=array_create(sizeof(ColorPoint));
-	parse_spec(&ss,&color_count,"i","color count",1);
+	parse_spec(&ss,&color_count,"i","grid color count",1);
 	for (i=0;i<color_count;i++)
 	{
-		parse_spec(&ss,&color1,"rc","color1",1);
-		parse_spec(&ss,&color2,"rc","color2",1);
-		parse_spec(&ss,&time,"rf","color time",1);
-		parse_spec(&ss,&replicate,"ri","color replicate",1);
+		parse_spec(&ss,&color1,"rc","grid color1",1);
+		parse_spec(&ss,&color2,"rc","grid color2",1);
+		parse_spec(&ss,&time,"rf","grid color time",1);
+		parse_spec(&ss,&replicate,"ri","grid color replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
 		{
 			color.color1=RandColor_value(&color1);
@@ -284,13 +284,32 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&amplitude,"rf","wave amplitude",1);
 		parse_spec(&ss,&length,"rf","wave length",1);
 		parse_spec(&ss,&period,"rf","wave period",1);
+		parse_spec(&ss,&contrast,"rf","wave color contrast",1);
+		parse_spec(&ss,&color_count,"i","wave color count",1);
+		for (j=0;j<color_count;j++)
+		{
+			parse_spec(&ss,&color1,"rc","wave color1",1);
+			parse_spec(&ss,&color2,"rc","wave color2",1);
+			parse_spec(&ss,&time,"rf","wave color time",1);
+			parse_spec(&ss,&wave_color_replicate,"ri","wave color replicate",1);
+		};
 		parse_spec(&ss,&replicate,"ri","wave replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
 		{
+			memset(&wave,0,sizeof(wave));
 			wave.source=RandVector_value(&source);
 			wave.amplitude=RandFloat_value(&amplitude);
 			wave.length=RandFloat_value(&length);
 			wave.period=RandFloat_value(&period);
+			wave.contrast=RandFloat_value(&contrast);
+			wave.color_animation.points=array_create(sizeof(ColorPoint));
+			for (k=0;k<RandInt_value(&wave_color_replicate)+1;k++)
+			{
+				color.color1=RandColor_value(&color1);
+				color.color2=RandColor_value(&color2);
+				color.time=RandFloat_value(&time);
+				array_add(wave.color_animation.points,&color);
+			};
 			array_add(waves,&wave);
 		};
 	};
