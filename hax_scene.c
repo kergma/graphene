@@ -233,7 +233,7 @@ Scene *scene_create(char *spec)
 	RandFloat fov,time;
 	int color_count;
 	Array *colors;
-	RandFloat contrast;
+	RandFloat contrast,wave_contrast;
 	RandColor color1,color2;
 	ColorPoint color;
 
@@ -284,7 +284,7 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&amplitude,"rf","wave amplitude",1);
 		parse_spec(&ss,&length,"rf","wave length",1);
 		parse_spec(&ss,&period,"rf","wave period",1);
-		parse_spec(&ss,&contrast,"rf","wave color contrast",1);
+		parse_spec(&ss,&wave_contrast,"rf","wave color contrast",1);
 		parse_spec(&ss,&color_count,"i","wave color count",1);
 		for (j=0;j<color_count;j++)
 		{
@@ -301,7 +301,7 @@ Scene *scene_create(char *spec)
 			wave.amplitude=RandFloat_value(&amplitude);
 			wave.length=RandFloat_value(&length);
 			wave.period=RandFloat_value(&period);
-			wave.contrast=RandFloat_value(&contrast);
+			wave.contrast=RandFloat_value(&wave_contrast);
 			wave.color_animation.points=array_create(sizeof(ColorPoint));
 			for (k=0;k<RandInt_value(&wave_color_replicate)+1;k++)
 			{
