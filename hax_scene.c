@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "hax_scene.h"
 #include "hax_map.h"
 #include "hax_camera.h"
@@ -22,7 +23,7 @@ int read_atomic_value(char **pos, void *out, char type);
 int read_atomic_value(char **pos, void *out, char type)
 {
 
-	char *tm1=calloc(strlen(*pos)+1,sizeof(char));
+	char *tm1=calloc(fminl(strlen(*pos)+1,9),sizeof(char)); /* 9 chars is the maximum length of color value */
 	char *tm2=tm1;
 
 	char *digits="0123456789.-";
@@ -31,13 +32,19 @@ int read_atomic_value(char **pos, void *out, char type)
 	if (type=='i') digits="0123456789-";
 	if (type=='f') digits="0123456789.-";
 	if (type=='x') digits="0123456789abcdefABCDEFx";
+	if (type=='c') digits="0123456789abcdefABCDEF#";
 	if (type=='s') digits="0123456789-.";
 
 	if (type=='x')
 	{
 		while (**pos && strstr(*pos,"0x")!=*pos) (*pos)++;
 	};
-	if (type=='i' || type=='f' || type=='x')
+	if (type=='c')
+	{
+		while (**pos && strstr(*pos,"#")!=*pos) (*pos)++;
+		if (**pos) (*pos)++;
+	};
+	if (type=='i' || type=='f' || type=='x' || type=='c')
 	{
 		while (**pos && !strchr(digits,**pos)) (*pos)++;
 		while (**pos && strchr(digits,**pos))
@@ -67,7 +74,25 @@ int read_atomic_value(char **pos, void *out, char type)
 	};
 	if (type=='i') *((int*)out)=atoi(tm1);
 	if (type=='f') *((float*)out)=atof(tm1);
-	if (type=='x') *((unsigned int*)out)=strtoul(tm1,NULL,16);
+	/* shorthand html hexadecimal color */
+	if (type=='c' && strlen(tm1)==3)
+	{
+		strcat(tm1,"xxx");
+		tm1[5]=tm1[4]=tm1[2];
+		tm1[3]=tm1[2]=tm1[1];
+		tm1[1]=tm1[0];
+	};
+	if (type=='c' && strlen(tm1)==4)
+	{
+		strcat(tm1,"xxxx");
+		tm1[7]=tm1[6]=tm1[3];
+		tm1[5]=tm1[4]=tm1[2];
+		tm1[3]=tm1[2]=tm1[1];
+		tm1[1]=tm1[0];
+	};
+	if (type=='x' || type=='c') *((unsigned int*)out)=strtoul(tm1,NULL,16);
+	if (type=='c')
+		*((COLOR*)out)=COLOR_swaprb(*((COLOR*)out));
 	if (type=='s')
 	{
 		*((char**)out)=(char*)calloc(strlen(tm1)+1,sizeof(char));
@@ -83,22 +108,12 @@ int read_value(char **pos, void *out, char *type)
 	int ai,bi;
 	float af,bf;
 	COLOR ac,bc;
-	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s"))
+	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s") || !strcmp(type,"c"))
 		return read_atomic_value(pos,out,*type);
 	if (!strcmp(type,"v"))
 		return read_atomic_value(pos,&((VECTOR3F*)out)->x,'f') && 
 			read_atomic_value(pos,&((VECTOR3F*)out)->y,'f') && 
 			read_atomic_value(pos,&((VECTOR3F*)out)->z,'f');
-	if (!strcmp(type,"c"))
-	{
-		if (read_atomic_value(pos,out,'x'))
-		{
-			*((COLOR*)out)=COLOR_swaprb(*((COLOR*)out));
-			return 1;
-		}
-		else
-			return 0;
-	};
 	if (!strcmp(type,"ri"))
 	{
 		if (!read_atomic_value(pos,&ai,'i')) return 0;
@@ -129,10 +144,10 @@ int read_value(char **pos, void *out, char *type)
 			read_value(pos,&((RandVector*)out)->z,"rf");
 	if (!strcmp(type,"rc"))
 	{
-		if (!read_value(pos,&ac,"c")) return 0;
+		if (!read_atomic_value(pos,&ac,'c')) return 0;
 		if (**pos==':')
 		{
-			if (!read_value(pos,&bc,"c")) return 0;
+			if (!read_atomic_value(pos,&bc,'c')) return 0;
 			*((RandColor*)out)=RandColor_c2(ac,bc);
 		}
 		else
@@ -169,8 +184,8 @@ int snprintf_rc(char *str, size_t size, RandColor v);
 int snprintf_rc(char *str, size_t size, RandColor v)
 {
 	if (v.random)
-		return snprintf(str,size,"0x%x:0x%x",v.a,v.b);
-	return snprintf(str,size,"0x%x",v.a);
+		return snprintf(str,size,"#%06x:#%06x",v.a,v.b);
+	return snprintf(str,size,"#%06x",v.a);
 }
 
 void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time);
