@@ -15,7 +15,7 @@
 #include "hax_map.h"
 
 typedef struct tagGRID_VERTEX {
-	unsigned int color;
+	COLOR color;
 	float x,y,z;
 } GRID_VERTEX;
 
@@ -34,13 +34,20 @@ int grid_render(Grid *g)
 	glVertex3f(0.0f,0.0f,1.0f);
 	glEnd();
 
-	glInterleavedArrays(GL_C4UB_V3F,sizeof(GRID_VERTEX),array_data(g->vertices));
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glColorPointer(3, GL_FLOAT, sizeof(GRID_VERTEX), &(((GRID_VERTEX*)array_data(g->vertices))->color.r));
+	glVertexPointer(3, GL_FLOAT, sizeof(GRID_VERTEX), &(((GRID_VERTEX*)array_data(g->vertices))->x));
+
 	glDrawElements(GL_LINES,array_count(g->indices),GL_UNSIGNED_INT,array_data(g->indices));
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 	return 0;
 }
 
-void add_vertex(Array *a, float x, float y, float z, GLuint c);
-void add_vertex(Array *a, float x, float y, float z, GLuint c)
+void add_vertex(Array *a, float x, float y, float z, COLOR c);
+void add_vertex(Array *a, float x, float y, float z, COLOR c)
 {
 	GRID_VERTEX v;
 	v.x=x; v.y=y; v.z=z; v.color=c;
@@ -91,6 +98,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float 
 	GRID_WAVE wave;
 	GRID_PARAM *param;
 	ColorPoint color;
+	COLOR white={1,1,1,1};
 
 	Grid *g=NEW(Grid);
 	if (!g) error_exit("out of memory");
@@ -215,7 +223,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float 
 	g->vertices=array_create(sizeof(GRID_VERTEX));
 	for (i=0;i<array_count(vertices);i++) {
 		array_item(vertices,i,&vertex);
-		add_vertex(g->vertices,vertex->x,0,vertex->z,0xffffff);
+		add_vertex(g->vertices,vertex->x,0,vertex->z,white);
 		for (j=0;j<array_count(g->waves);j++)
 		{
 			array_item(g->waves,j,&wave);

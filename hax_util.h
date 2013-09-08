@@ -45,18 +45,26 @@ typedef struct tagRandVector {
 RandVector RandVector_c(RandFloat x, RandFloat y, RandFloat z);
 VECTOR3F RandVector_value(RandVector *v);
 
-typedef unsigned int COLOR;
+typedef struct tagCOLOR
+{
+	float a,r,g,b;
+} COLOR;
+
 typedef struct tagRandColor
 {
 	COLOR a,b;
 	char random;
 } RandColor;
+RandColor RandColor_c(RandFloat a, RandFloat r, RandFloat g, RandFloat b);
+COLOR RandColor_value(RandColor *v);
 
+COLOR COLOR_c4(float a, float r, float g, float b);
+COLOR COLOR_c_uint(unsigned int v);
+COLOR COLOR_c_str(const char *s);
+void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s);
 RandColor RandColor_c2(COLOR a, COLOR b);
 RandColor RandColor_c1(COLOR a);
 COLOR RandColor_value(RandColor *v);
-COLOR COLOR_swaprb(COLOR c);
-
 
 #define THE_PI 3.14159f
 #define DOUBLE_PI 6.28f
@@ -113,7 +121,6 @@ unsigned int array_find(Array *a, void *item);
 float float_lerp(float *pOut, float *f1, float *f2, float s);
 void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s);
 void VECTOR3F_hermite(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s);
-void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s);
 #define CIT_COUNT 256
 typedef unsigned char CIT_EL;
 void initialize_cit(CIT_EL *cit, float contrast);

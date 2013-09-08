@@ -4,18 +4,12 @@
 #include "hax_camera.h"
 
 
-typedef struct tagBgPoint
-{
-	float time;
-	GLfloat r,g,b,a;
-} BgPoint;
-
 typedef struct tagScene
 {
 	Map *map;
 	Grid *grid;
 	Camera *camera;
-	GLfloat clr,clg,clb,cla;
+	COLOR bgcolor;
 	WayAnimation bganimation;
 	int enable_grid_animation;
 } Scene;

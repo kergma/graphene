@@ -40,10 +40,7 @@ int read_atomic_value(char **pos, void *out, char type)
 		while (**pos && strstr(*pos,"0x")!=*pos) (*pos)++;
 	};
 	if (type=='c')
-	{
 		while (**pos && strstr(*pos,"#")!=*pos) (*pos)++;
-		if (**pos) (*pos)++;
-	};
 	if (type=='i' || type=='f' || type=='x' || type=='c')
 	{
 		while (**pos && !strchr(digits,**pos)) (*pos)++;
@@ -74,25 +71,9 @@ int read_atomic_value(char **pos, void *out, char type)
 	};
 	if (type=='i') *((int*)out)=atoi(tm1);
 	if (type=='f') *((float*)out)=atof(tm1);
-	/* shorthand html hexadecimal color */
-	if (type=='c' && strlen(tm1)==3)
-	{
-		strcat(tm1,"xxx");
-		tm1[5]=tm1[4]=tm1[2];
-		tm1[3]=tm1[2]=tm1[1];
-		tm1[1]=tm1[0];
-	};
-	if (type=='c' && strlen(tm1)==4)
-	{
-		strcat(tm1,"xxxx");
-		tm1[7]=tm1[6]=tm1[3];
-		tm1[5]=tm1[4]=tm1[2];
-		tm1[3]=tm1[2]=tm1[1];
-		tm1[1]=tm1[0];
-	};
-	if (type=='x' || type=='c') *((unsigned int*)out)=strtoul(tm1,NULL,16);
+	if (type=='x') *((unsigned int*)out)=strtoul(tm1,NULL,16);
 	if (type=='c')
-		*((COLOR*)out)=COLOR_swaprb(*((COLOR*)out));
+		*((COLOR*)out)=COLOR_c_str(tm1);
 	if (type=='s')
 	{
 		*((char**)out)=(char*)calloc(strlen(tm1)+1,sizeof(char));
@@ -107,7 +88,7 @@ int read_value(char **pos, void *out, char *type)
 {
 	int ai,bi;
 	float af,bf;
-	COLOR ac,bc;
+	COLOR acf,bcf;
 	if (!strcmp(type,"i") || !strcmp(type,"f") || !strcmp(type,"x") || !strcmp(type,"s") || !strcmp(type,"c"))
 		return read_atomic_value(pos,out,*type);
 	if (!strcmp(type,"v"))
@@ -144,14 +125,14 @@ int read_value(char **pos, void *out, char *type)
 			read_value(pos,&((RandVector*)out)->z,"rf");
 	if (!strcmp(type,"rc"))
 	{
-		if (!read_atomic_value(pos,&ac,'c')) return 0;
+		if (!read_atomic_value(pos,&acf,'c')) return 0;
 		if (**pos==':')
 		{
-			if (!read_atomic_value(pos,&bc,'c')) return 0;
-			*((RandColor*)out)=RandColor_c2(ac,bc);
+			if (!read_atomic_value(pos,&bcf,'c')) return 0;
+			*((RandColor*)out)=RandColor_c2(acf,bcf);
 		}
 		else
-			*((RandColor*)out)=RandColor_c1(ac);
+			*((RandColor*)out)=RandColor_c1(acf);
 
 	};
 	return 1;
@@ -180,23 +161,32 @@ int snprintf_rv(char *str, size_t size, RandVector v)
 	snprintf_rf(z,32,v.z);
 	return snprintf(str,size,"%s, %s, %s",x,y,z);
 }
-int snprintf_rc(char *str, size_t size, RandColor v);
-int snprintf_rc(char *str, size_t size, RandColor v)
+int snprintf_c(char *str, size_t size, COLOR *v);
+int snprintf_c(char *str, size_t size, COLOR *v)
 {
-	if (v.random)
-		return snprintf(str,size,"#%06x:#%06x",v.a,v.b);
-	return snprintf(str,size,"#%06x",v.a);
+	unsigned int i=(unsigned char)(v->a*255.0)<<24|
+		(unsigned char)(v->r*255.0)<<16|
+		(unsigned char)(v->g*255.0)<<8|
+		(unsigned char)(v->b*255.0);
+	return snprintf(str,size,"%f, %f, %f, %f (#%06x)",v->a,v->r,v->g,v->b,i);
+}
+int snprintf_rc(char *str, size_t size, RandColor *v);
+int snprintf_rc(char *str, size_t size, RandColor *v)
+{
+	char a[100],b[100];
+	if (!v->random)
+		return snprintf_c(str,size,&v->a);
+	snprintf_c(a,100,&v->a);
+	snprintf_c(b,100,&v->b);
+	return snprintf(str,size,"%s:%s",a,b);
 }
 
-void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time);
-void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time)
+void scene_add_bgcolor(Scene *s, COLOR bgcolor, float time);
+void scene_add_bgcolor(Scene *s, COLOR bgcolor, float time)
 {
-	BgPoint bg;
+	ColorPoint bg;
 	bg.time=time;
-	bg.a=(float)(bgcolor>>24&0xff)/255.f;
-	bg.b=(float)(bgcolor>>16&0xff)/255.f;
-	bg.g=(float)(bgcolor>>8&0xff)/255.f;
-	bg.r=(float)(bgcolor&0xff)/255.f;
+	bg.color1=bgcolor;
 	
 	array_add(s->bganimation.points,&bg);
 }
@@ -221,7 +211,8 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 	if (!strcmp(type,"s")) snprintf(buf,512,"%s",*(char**)out);
 	if (!strcmp(type,"v")) snprintf(buf,512,"%f, %f, %f",((VECTOR3F*)out)->x,((VECTOR3F*)out)->y,((VECTOR3F*)out)->z);
 	if (!strcmp(type,"rv")) snprintf_rv(buf,512,*((RandVector*)out));
-	if (!strcmp(type,"rc")) snprintf_rc(buf,512,*((RandColor*)out));
+	if (!strcmp(type,"c")) snprintf_c(buf,512,(COLOR*)out);
+	if (!strcmp(type,"rc")) snprintf_rc(buf,512,(RandColor*)out);
 	printf("%s: %s\n",key,buf);
 }
 
@@ -262,7 +253,7 @@ Scene *scene_create(char *spec)
 	parse_spec(&ss,&map_size,"ri","map size",1);
 	parse_spec(&ss,&cell_size,"rf","cell size",1);
 
-	s->bganimation.points=array_create(sizeof(BgPoint));
+	s->bganimation.points=array_create(sizeof(ColorPoint));
 	parse_spec(&ss,&bgcount,"i","bg count",1);
 	for (i=0;i<bgcount;i++)
 	{
@@ -301,6 +292,7 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&period,"rf","wave period",1);
 		parse_spec(&ss,&wave_contrast,"rf","wave color contrast",1);
 		parse_spec(&ss,&color_count,"i","wave color count",1);
+		wave_color_replicate=RandInt_c1(0); /* FIX ME */
 		for (j=0;j<color_count;j++)
 		{
 			parse_spec(&ss,&color1,"rc","wave color1",1);
@@ -374,7 +366,7 @@ Scene *scene_create(char *spec)
 
 int scene_render(Scene *s)
 {
-	glClearColor(s->clr,s->clg,s->clb,s->cla);
+	glClearColor(s->bgcolor.r,s->bgcolor.g,s->bgcolor.b,s->bgcolor.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	camera_render(s->camera);
@@ -396,13 +388,13 @@ int scene_free(Scene *s)
 void animate_bg(void *context, void *current, void *next, float s)
 {
 	Scene *scene=(Scene*)context;
-	BgPoint *c=(BgPoint*)current;
-	BgPoint *n=(BgPoint*)next;
+	ColorPoint *c=(ColorPoint*)current;
+	ColorPoint *n=(ColorPoint*)next;
 
-	float_lerp(&scene->clr,&c->r,&n->r,s);
-	float_lerp(&scene->clg,&c->g,&n->g,s);
-	float_lerp(&scene->clb,&c->b,&n->b,s);
-	float_lerp(&scene->cla,&c->a,&n->a,s);
+	float_lerp(&scene->bgcolor.a,&c->color1.a,&n->color1.a,s);
+	float_lerp(&scene->bgcolor.r,&c->color1.r,&n->color1.r,s);
+	float_lerp(&scene->bgcolor.g,&c->color1.g,&n->color1.g,s);
+	float_lerp(&scene->bgcolor.b,&c->color1.b,&n->color1.b,s);
 }
 void scene_animate(Scene *s, float delta)
 {

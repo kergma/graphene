@@ -237,6 +237,60 @@ VECTOR3F RandVector_value(RandVector *v)
 	return r;
 }
 
+COLOR COLOR_c4(float a, float r, float g, float b)
+{
+	COLOR v;
+	v.a=a;
+	v.r=r;
+	v.g=g;
+	v.b=b;
+	return v;
+}
+
+COLOR COLOR_c_uint(unsigned int i)
+{
+	unsigned int a=i>>24&0xff;
+	unsigned int r=i>>16&0xff;
+	unsigned int g=i>>8&0xff;
+	unsigned int b=i&0xff;
+
+	COLOR v;
+	v.a=(float)a/255.0f;
+	v.r=(float)r/255.0f;
+	v.g=(float)g/255.0f;
+	v.b=(float)b/255.0f;
+	return v;
+}
+COLOR COLOR_c_str(const char *s)
+{
+	char buf[9];
+	if (*s=='#') strncpy(buf,s+1,9); else strncpy(buf,s,9);
+	buf[8]=0;
+	if (strlen(buf)==3)
+	{
+		buf[5]=buf[4]=buf[2];
+		buf[3]=buf[2]=buf[1];
+		buf[1]=buf[0];
+		buf[6]=0;
+	};
+	if (strlen(buf)==4)
+	{
+		buf[7]=buf[6]=buf[3];
+		buf[5]=buf[4]=buf[2];
+		buf[3]=buf[2]=buf[1];
+		buf[1]=buf[0];
+		buf[8]=0;
+	};
+	return COLOR_c_uint(strtoul(buf,NULL,16));
+}
+void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s)
+{
+	float_lerp(&out->a,&c1.a,&c2.a,s);
+	float_lerp(&out->r,&c1.r,&c2.r,s);
+	float_lerp(&out->g,&c1.g,&c2.g,s);
+	float_lerp(&out->b,&c1.b,&c2.b,s);
+}
+
 RandColor RandColor_c2(COLOR a, COLOR b)
 {
 	RandColor v;
@@ -245,7 +299,6 @@ RandColor RandColor_c2(COLOR a, COLOR b)
 	v.random=1;
 	return v;
 }
-
 RandColor RandColor_c1(COLOR a)
 {
 	RandColor v;
@@ -256,28 +309,14 @@ RandColor RandColor_c1(COLOR a)
 
 COLOR RandColor_value(RandColor *v)
 {
-	unsigned char a1=v->a>>24&0xff;
-	unsigned char b1=v->b>>24&0xff;
-	unsigned char a2=v->a>>16&0xff;
-	unsigned char b2=v->b>>16&0xff;
-	unsigned char a3=v->a>>8&0xff;
-	unsigned char b3=v->b>>8&0xff;
-	unsigned char a4=v->a&0xff;
-	unsigned char b4=v->b&0xff;
-	unsigned char v1=v->random?(b1-a1+1)*(long int)random()/RAND_MAX+a1:a1;
-	unsigned char v2=v->random?(b2-a2+1)*(long int)random()/RAND_MAX+a2:a2;
-	unsigned char v3=v->random?(b3-a3+1)*(long int)random()/RAND_MAX+a3:a3;
-	unsigned char v4=v->random?(b4-a4+1)*(long int)random()/RAND_MAX+a4:a4;
-	return v1<<24|v2<<16|v3<<8|v4;
-}
+	if (!v->random) return v->a;
 
-COLOR COLOR_swaprb(COLOR c)
-{
-	unsigned char a=c>>24&0xff;
-	unsigned char r=c>>16&0xff;
-	unsigned char g=c>>8&0xff;
-	unsigned char b=c&0xff;
-	return a<<24|b<<16|g<<8|r;
+	return COLOR_c4(
+		(v->b.a-v->a.a)*(double)random()/RAND_MAX+v->a.a,
+		(v->b.r-v->a.r)*(double)random()/RAND_MAX+v->a.r,
+		(v->b.g-v->a.g)*(double)random()/RAND_MAX+v->a.g,
+		(v->b.b-v->a.b)*(double)random()/RAND_MAX+v->a.b
+	);
 }
 
 float float_lerp(float *pOut, float *f1, float *f2, float s)
@@ -293,7 +332,6 @@ void VECTOR3F_lerp(VECTOR3F *pOut, VECTOR3F *v1, VECTOR3F *v2, float s)
 	pOut->z=v1->z+(v2->z-v1->z)*s;
 }
 
-
 void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, VECTOR3F *t2, float s)
 {
 	float h1=2*s*s*s-3*s*s+1;
@@ -305,23 +343,6 @@ void VECTOR3F_hermite(VECTOR3F *out, VECTOR3F *v1, VECTOR3F *t1, VECTOR3F *v2, V
 	out->z=h1*v1->z+h2*v2->z+h3*t1->z+h4*t2->z;
 }
 
-void COLOR_lerp(COLOR *out, COLOR c1, COLOR c2, float s)
-{
-	unsigned char a1,r1,g1,b1,a2,r2,g2,b2,a,r,g,b;
-	a1=(unsigned char)(c1>>24);
-	r1=(unsigned char)(c1>>16);
-	g1=(unsigned char)(c1>>8);
-	b1=(unsigned char)(c1);
-	a2=(unsigned char)(c2>>24);
-	r2=(unsigned char)(c2>>16);
-	g2=(unsigned char)(c2>>8);
-	b2=(unsigned char)(c2);
-	a=(unsigned char)(a1+(a2-a1)*s);
-	r=(unsigned char)(r1+(r2-r1)*s);
-	g=(unsigned char)(g1+(g2-g1)*s);
-	b=(unsigned char)(b1+(b2-b1)*s);
-	*out=(a<<24)+(r<<16)+(g<<8)+b;
-}
 void initialize_cit(CIT_EL *cit, float contrast)
 {
 	int i;
@@ -337,20 +358,7 @@ void initialize_cit(CIT_EL *cit, float contrast)
 }
 void COLOR_cit(COLOR *out, COLOR c1, COLOR c2, float s, CIT_EL *cit)
 {
-	unsigned char a1,r1,g1,b1,a2,r2,g2,b2,a,r,g,b;
-	a1=(unsigned char)(c1>>24);
-	r1=(unsigned char)(c1>>16);
-	g1=(unsigned char)(c1>>8);
-	b1=(unsigned char)(c1);
-	a2=(unsigned char)(c2>>24);
-	r2=(unsigned char)(c2>>16);
-	g2=(unsigned char)(c2>>8);
-	b2=(unsigned char)(c2);
-	a=(unsigned char)(a1+(a2-a1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
-	r=(unsigned char)(r1+(r2-r1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
-	g=(unsigned char)(g1+(g2-g1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
-	b=(unsigned char)(b1+(b2-b1)*cit[fast_round(s*(CIT_COUNT-1))]/CIT_COUNT);
-	*out=(a<<24)+(r<<16)+(g<<8)+b;
+	COLOR_lerp(out,c1,c2,s);
 }
 
 typedef struct tagWayPoint
