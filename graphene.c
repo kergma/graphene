@@ -14,13 +14,13 @@
 			"*showFPS:      False       \n" \
 			"*wireframe:    False       \n" \
 
-# define refresh_hax 0
+# define refresh_graphene 0
 #undef countof
 #define countof(x) (sizeof((x))/sizeof((*x)))
 
 #include "xlockmore.h"
-#include "hax_scene.h"
-#include "hax_camera.h"
+#include "graphene_scene.h"
+#include "graphene_camera.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
@@ -34,7 +34,7 @@ typedef struct tagHaxInfo
 	char *scene_spec;
 } HaxInfo;
 
-static HaxInfo *hax_info=NULL;
+static HaxInfo *graphene_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
@@ -46,7 +46,7 @@ static argtype vars[] =
 	{&cl_scene_spec, "scene",  "Scene specification",  "1 0x0 17 0.2 bg 1 #888 10 0 color 1 1 #fff #fff 10 0 wav 1 0 0 0 0.1 1 1 wc 1 0 0 cam 1 3 3 3 0 0 0 0 1 0 45 10 0", t_String},
 };
 
-ENTRYPOINT ModeSpecOpt hax_opts = {countof(opts), opts, countof(vars), vars, NULL};
+ENTRYPOINT ModeSpecOpt graphene_opts = {countof(opts), opts, countof(vars), vars, NULL};
 
 static double start_time=0.0;
 static double last_drawn_time=0.0;
@@ -64,45 +64,45 @@ static double current_time(void)
 	return (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
 }
 
-ENTRYPOINT void reshape_hax (ModeInfo *mi, int width, int height)
+ENTRYPOINT void reshape_graphene (ModeInfo *mi, int width, int height)
 {
 	glViewport(0, 0, width, height);
 	camera_set_viewport(scene->camera,width,height);
 	camera_render(scene->camera);
 }
 
-ENTRYPOINT Bool hax_handle_event (ModeInfo *mi, XEvent *event)
+ENTRYPOINT Bool graphene_handle_event (ModeInfo *mi, XEvent *event)
 {
-	/*HaxInfo *hi=&hax_info[MI_SCREEN(mi)];*/
+	/*HaxInfo *hi=&graphene_info[MI_SCREEN(mi)];*/
 	return False;
 }
 
 
-ENTRYPOINT void init_hax (ModeInfo *mi)
+ENTRYPOINT void init_graphene (ModeInfo *mi)
 {
 
 	HaxInfo *hi;
 	
-	if (hax_info==NULL)
+	if (graphene_info==NULL)
 	{
-		hax_info=(HaxInfo*)calloc(MI_NUM_SCREENS(mi),sizeof(HaxInfo));
-		if (hax_info==NULL) error_exit("out of memory");
+		graphene_info=(HaxInfo*)calloc(MI_NUM_SCREENS(mi),sizeof(HaxInfo));
+		if (graphene_info==NULL) error_exit("out of memory");
 	};
 
 	init_fast_math();
-	hi=&hax_info[MI_SCREEN(mi)];
+	hi=&graphene_info[MI_SCREEN(mi)];
 	hi->scene_spec=cl_scene_spec;
 	hi->glx_context=init_GL(mi);
 
  	scene=scene_create(cl_scene_spec);
 	start_time=current_time();
-	reshape_hax (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
+	reshape_graphene (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
 
 
-ENTRYPOINT void draw_hax (ModeInfo *mi)
+ENTRYPOINT void draw_graphene (ModeInfo *mi)
 {
-	HaxInfo *hi=&hax_info[MI_SCREEN(mi)];
+	HaxInfo *hi=&graphene_info[MI_SCREEN(mi)];
 	Display *display = MI_DISPLAY(mi);
 	Window window = MI_WINDOW(mi);
 	double cur_time;
@@ -121,14 +121,14 @@ ENTRYPOINT void draw_hax (ModeInfo *mi)
 	glXSwapBuffers(display, window);
 }
 
-ENTRYPOINT void release_hax (ModeInfo *mi)
+ENTRYPOINT void release_graphene (ModeInfo *mi)
 {
 	scene_free(scene);
 	free(cl_scene_spec);
-	if (hax_info) free(hax_info);
-	hax_info=NULL;
+	if (graphene_info) free(graphene_info);
+	graphene_info=NULL;
 }
 
-XSCREENSAVER_MODULE ("Hax", hax)
+XSCREENSAVER_MODULE ("Graphene", graphene)
 
 #endif /* USE_GL */

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "hax_util.h"
+#include "graphene_util.h"
 #include "xlockmore.h"
 
 VECTOR3F VECTOR3F_c(float x, float y, float z)

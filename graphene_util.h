@@ -1,4 +1,4 @@
-#ifndef HAX_UTIL_H
+#ifndef GRAPHENE_UTIL_H
 
 typedef struct tagHEXAGON_VERTEX {
 	float x,z;
@@ -135,5 +135,5 @@ float fast_sin(float x);
 
 void init_fast_math(void);
 
-#define HAX_UTIL_H
-#endif /* HAX_UTIL_H */
+#define GRAPHENE_UTIL_H
+#endif /* GRAPHENE_UTIL_H */

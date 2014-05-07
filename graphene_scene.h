@@ -1,7 +1,7 @@
-#ifndef HAX_SCENE_H
-#include "hax_map.h"
-#include "hax_grid.h"
-#include "hax_camera.h"
+#ifndef GRAPHENE_SCENE_H
+#include "graphene_map.h"
+#include "graphene_grid.h"
+#include "graphene_camera.h"
 
 
 typedef struct tagBgPoint
@@ -25,5 +25,5 @@ Scene *scene_create(char *spec);
 int scene_free(Scene *s);
 void scene_animate(Scene *s, float delta);
 
-#define HAX_SCENE_H
-#endif /* HAX_SCENE_H */
+#define GRAPHENE_SCENE_H
+#endif /* GRAPHENE_SCENE_H */

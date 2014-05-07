@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "hax_grid.h"
-#include "hax_map.h"
+#include "graphene_grid.h"
+#include "graphene_map.h"
 
 typedef struct tagGRID_VERTEX {
 	unsigned int color;

@@ -1,5 +1,5 @@
-#ifndef HAX_MAP_H
-#include "hax_util.h"
+#ifndef GRAPHENE_MAP_H
+#include "graphene_util.h"
 
 typedef struct tagHEXCOORD {
 	int u,v,f;
@@ -35,6 +35,6 @@ HEXCOORD HEXCOORD_c(int u, int v, int f);
 HEXCOORD HEXCOORD_mulint(HEXCOORD h, int m);
 HEXCOORD HEXCOORD_add(HEXCOORD h, HEXCOORD a);
 
-#define HAX_MAP_H
-#endif /* HAX_MAP_H */
+#define GRAPHENE_MAP_H
+#endif /* GRAPHENE_MAP_H */
 

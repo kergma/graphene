@@ -5,8 +5,8 @@
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
  		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
 -		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
-+		  extrusion-taper.c extrusion-twistoid.c hax.c hax_scene.c \
-+		  hax_camera.c hax_grid.c hax_util.c hax_map.c sierpinski3d.c \
++		  extrusion-taper.c extrusion-twistoid.c graphene.c graphene_scene.c \
++		  graphene_camera.c graphene_grid.c graphene_util.c graphene_map.c sierpinski3d.c \
  		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
  		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
  		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
@@ -15,8 +15,8 @@
  		  extrusion.o extrusion-helix2.o extrusion-helix3.o \
  		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
 -		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
-+		  extrusion-taper.o extrusion-twistoid.o hax.o hax_scene.o \
-+		  hax_camera.o hax_grid.o hax_util.o hax_map.o sierpinski3d.o \
++		  extrusion-taper.o extrusion-twistoid.o graphene.o graphene_scene.o \
++		  graphene_camera.o graphene_grid.o graphene_util.o graphene_map.o sierpinski3d.o \
  		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
  		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
  		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
@@ -25,7 +25,7 @@
  		  morph3d rubik atlantis lament bubble3d glplanet pulsar \
  		  sierpinski3d gflux stonerview starwars gltext molecule \
 -		  dangerball circuit menger engine flipscreen3d glsnake boxed \
-+		  dangerball hax circuit menger engine flipscreen3d glsnake boxed \
++		  dangerball graphene circuit menger engine flipscreen3d glsnake boxed \
  		  sballs cubenetic spheremonics lavalite queens \
  		  endgame glblur flurry atunnel flyingtoasters bouncingcow \
  		  glslideshow jigglypuff klein hypertorus glmatrix cubestorm \
@@ -33,14 +33,14 @@
  		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
-+		  hax_scene.h hax_camera.h hax_grid.h hax_util.h hax_map.h \
++		  graphene_scene.h graphene_camera.h graphene_grid.h graphene_util.h graphene_map.h \
  		  involute.h teapot.h sonar.h dropshadow.h starwars.h \
  		  jwzgles.h jwzglesI.h teapot2.h dnapizza.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
  		  cubenetic.man dangerball.man engine.man extrusion.man \
  		  flipscreen3d.man gears.man gflux.man \
 -		  glplanet.man glsnake.man gltext.man lament.man lavalite.man \
-+		  glplanet.man glsnake.man gltext.man hax.man lament.man lavalite.man \
++		  glplanet.man glsnake.man gltext.man graphene.man lament.man lavalite.man \
  		  menger.man moebius.man molecule.man morph3d.man pipes.man \
  		  pulsar.man queens.man rubik.man sballs.man sierpinski3d.man \
  		  spheremonics.man sproingies.man stairs.man starwars.man \
@@ -48,9 +48,9 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
  
-+HAX_OBJS=sphere.o tube.o hax_scene.o hax_camera.o hax_grid.o hax_util.o hax_map.o $(HACK_TRACK_OBJS)
-+hax:	hax.o	$(HAX_OBJS)
-+	$(CC_HACK) -o $@ $@.o	$(HAX_OBJS) $(HACK_LIBS)
++GRAPHENE_OBJS=sphere.o tube.o graphene_scene.o graphene_camera.o graphene_grid.o graphene_util.o graphene_map.o $(HACK_TRACK_OBJS)
++graphene:	graphene.o	$(GRAPHENE_OBJS)
++	$(CC_HACK) -o $@ $@.o	$(GRAPHENE_OBJS) $(HACK_LIBS)
 +
  circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
  	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
@@ -59,28 +59,28 @@
  cubicgrid.o: $(UTILS_SRC)/yarandom.h
  cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
  cubicgrid.o: $(HACK_SRC)/xlockmore.h
-+hax.o: ../../config.h
-+hax.o: $(HACK_SRC)/fps.h
-+hax.o: $(srcdir)/gltrackball.h
-+hax.o: $(srcdir)/rotator.h
-+hax.o: $(HACK_SRC)/screenhackI.h
-+hax.o: $(srcdir)/sphere.h
-+hax.o: $(srcdir)/tube.h
-+hax.o: $(srcdir)/hax_scene.h
-+hax.o: $(srcdir)/hax_camera.h
-+hax.o: $(srcdir)/hax_grid.h
-+hax.o: $(srcdir)/hax_util.h
-+hax.o: $(srcdir)/hax_map.h
-+hax.o: $(UTILS_SRC)/colors.h
-+hax.o: $(UTILS_SRC)/grabscreen.h
-+hax.o: $(UTILS_SRC)/hsv.h
-+hax.o: $(UTILS_SRC)/resources.h
-+hax.o: $(UTILS_SRC)/usleep.h
-+hax.o: $(UTILS_SRC)/visual.h
-+hax.o: $(UTILS_SRC)/xshm.h
-+hax.o: $(UTILS_SRC)/yarandom.h
-+hax.o: $(HACK_SRC)/xlockmoreI.h
-+hax.o: $(HACK_SRC)/xlockmore.h
++graphene.o: ../../config.h
++graphene.o: $(HACK_SRC)/fps.h
++graphene.o: $(srcdir)/gltrackball.h
++graphene.o: $(srcdir)/rotator.h
++graphene.o: $(HACK_SRC)/screenhackI.h
++graphene.o: $(srcdir)/sphere.h
++graphene.o: $(srcdir)/tube.h
++graphene.o: $(srcdir)/graphene_scene.h
++graphene.o: $(srcdir)/graphene_camera.h
++graphene.o: $(srcdir)/graphene_grid.h
++graphene.o: $(srcdir)/graphene_util.h
++graphene.o: $(srcdir)/graphene_map.h
++graphene.o: $(UTILS_SRC)/colors.h
++graphene.o: $(UTILS_SRC)/grabscreen.h
++graphene.o: $(UTILS_SRC)/hsv.h
++graphene.o: $(UTILS_SRC)/resources.h
++graphene.o: $(UTILS_SRC)/usleep.h
++graphene.o: $(UTILS_SRC)/visual.h
++graphene.o: $(UTILS_SRC)/xshm.h
++graphene.o: $(UTILS_SRC)/yarandom.h
++graphene.o: $(HACK_SRC)/xlockmoreI.h
++graphene.o: $(HACK_SRC)/xlockmore.h
  dangerball.o: ../../config.h
  dangerball.o: $(HACK_SRC)/fps.h
  dangerball.o: $(srcdir)/gltrackball.h

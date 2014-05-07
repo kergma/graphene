@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "hax_util.h"
-#include "hax_map.h"
+#include "graphene_util.h"
+#include "graphene_map.h"
 
 HEXCOORD hex_direction[7]={{1,-1,0}, {1,0,-1}, {0,1,-1}, {-1,1,0}, {-1,0,1}, {0,-1,1}, {1,-1,0}};
 

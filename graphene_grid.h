@@ -1,6 +1,6 @@
-#ifndef HAX_GRID_H
+#ifndef GRAPHENE_GRID_H
 
-#include "hax_map.h"
+#include "graphene_map.h"
 
 typedef float GRID_PARAM;
 
@@ -45,5 +45,5 @@ void grid_clear(Grid *g);
 VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc);
 void grid_animate(Grid *g, float delta);
 
-#define HAX_GRID_H
-#endif /* HAX_GRID_H */
+#define GRAPHENE_GRID_H
+#endif /* GRAPHENE_GRID_H */

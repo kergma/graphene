@@ -1,6 +1,6 @@
-#ifndef HAX_CAMERA_H
+#ifndef GRAPHENE_CAMERA_H
 
-#include "hax_util.h"
+#include "graphene_util.h"
 
 typedef struct tagCamPoint {
 	VECTOR3F pos,target,up;
@@ -29,5 +29,5 @@ void camera_animate_hermite(Camera *c, float delta);
 void camera_animate(Camera *c, float delta);
 void camera_render(Camera *c);
 
-#define HAX_CAMERA_H
-#endif /* HAX_CAMERA_H */
+#define GRAPHENE_CAMERA_H
+#endif /* GRAPHENE_CAMERA_H */

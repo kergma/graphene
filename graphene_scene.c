@@ -12,10 +12,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "hax_scene.h"
-#include "hax_map.h"
-#include "hax_camera.h"
-#include "hax_grid.h"
+#include "graphene_scene.h"
+#include "graphene_map.h"
+#include "graphene_camera.h"
+#include "graphene_grid.h"
 
 void animate_bg(void *context, void *current, void *next, float s);
 

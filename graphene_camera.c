@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "hax_camera.h"
+#include "graphene_camera.h"
 
 Camera *camera_create(void)
 {
