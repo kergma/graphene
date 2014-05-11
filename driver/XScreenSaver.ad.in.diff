@@ -1,0 +1,10 @@
+--- XScreenSaver.ad.in.orig	2014-05-11 02:56:07.984983280 +0800
++++ XScreenSaver.ad.in	2014-05-11 08:44:33.498404079 +0800
+@@ -251,6 +251,7 @@
+ 				xspirograph -root			    \n\
+ @GL_KLUDGE@ GL: 				circuit -root				    \n\
+ @GL_KLUDGE@ GL: 				dangerball -root			    \n\
++@GL_KLUDGE@ GL: 				graphene -root				    \n\
+ - GL: 				dnalogo -root				    \n\
+ @GL_KLUDGE@ GL: 				engine -root				    \n\
+ @GL_KLUDGE@ GL: 				flipscreen3d -root			    \n\
