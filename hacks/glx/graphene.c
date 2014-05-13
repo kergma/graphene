@@ -28,13 +28,13 @@
 Scene *scene=NULL;
 static char *cl_scene_spec;
 
-typedef struct tagHaxInfo
+typedef struct tagGrapheneInfo
 {
 	GLXContext *glx_context;
 	char *scene_spec;
-} HaxInfo;
+} GrapheneInfo;
 
-static HaxInfo *graphene_info=NULL;
+static GrapheneInfo *graphene_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
@@ -73,7 +73,7 @@ ENTRYPOINT void reshape_graphene (ModeInfo *mi, int width, int height)
 
 ENTRYPOINT Bool graphene_handle_event (ModeInfo *mi, XEvent *event)
 {
-	/*HaxInfo *hi=&graphene_info[MI_SCREEN(mi)];*/
+	/*GrapheneInfo *gi=&graphene_info[MI_SCREEN(mi)];*/
 	return False;
 }
 
@@ -81,18 +81,18 @@ ENTRYPOINT Bool graphene_handle_event (ModeInfo *mi, XEvent *event)
 ENTRYPOINT void init_graphene (ModeInfo *mi)
 {
 
-	HaxInfo *hi;
+	GrapheneInfo *gi;
 	
 	if (graphene_info==NULL)
 	{
-		graphene_info=(HaxInfo*)calloc(MI_NUM_SCREENS(mi),sizeof(HaxInfo));
+		graphene_info=(GrapheneInfo*)calloc(MI_NUM_SCREENS(mi),sizeof(GrapheneInfo));
 		if (graphene_info==NULL) error_exit("out of memory");
 	};
 
 	init_fast_math();
-	hi=&graphene_info[MI_SCREEN(mi)];
-	hi->scene_spec=cl_scene_spec;
-	hi->glx_context=init_GL(mi);
+	gi=&graphene_info[MI_SCREEN(mi)];
+	gi->scene_spec=cl_scene_spec;
+	gi->glx_context=init_GL(mi);
 
  	scene=scene_create(cl_scene_spec);
 	start_time=current_time();
@@ -102,14 +102,14 @@ ENTRYPOINT void init_graphene (ModeInfo *mi)
 
 ENTRYPOINT void draw_graphene (ModeInfo *mi)
 {
-	HaxInfo *hi=&graphene_info[MI_SCREEN(mi)];
+	GrapheneInfo *gi=&graphene_info[MI_SCREEN(mi)];
 	Display *display = MI_DISPLAY(mi);
 	Window window = MI_WINDOW(mi);
 	double cur_time;
 
-	if (!hi->glx_context) return;
+	if (!gi->glx_context) return;
 
-	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(hi->glx_context));
+	glXMakeCurrent(MI_DISPLAY(mi), MI_WINDOW(mi), *(gi->glx_context));
 
 	cur_time=current_time()-start_time;
 	scene_animate(scene,cur_time-last_drawn_time);
