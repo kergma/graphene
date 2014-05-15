@@ -20,7 +20,6 @@
 
 #include "xlockmore.h"
 #include "graphene_scene.h"
-#include "graphene_camera.h"
 #include <ctype.h>
 
 #ifdef USE_GL /* whole file */
