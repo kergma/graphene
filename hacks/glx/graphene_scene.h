@@ -1,6 +1,5 @@
 #ifndef GRAPHENE_SCENE_H
-#include "graphene_map.h"
-#include "graphene_grid.h"
+#include "graphene_geometry.h"
 
 typedef struct tagCamPoint {
 	VECTOR3F pos,target,up;

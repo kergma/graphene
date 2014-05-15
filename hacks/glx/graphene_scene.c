@@ -13,8 +13,7 @@
 #include <string.h>
 #include <math.h>
 #include "graphene_scene.h"
-#include "graphene_map.h"
-#include "graphene_grid.h"
+#include "graphene_geometry.h"
 #include "graphene_util.h"
 
 void animate_bg(void *context, void *current, void *next, float s);

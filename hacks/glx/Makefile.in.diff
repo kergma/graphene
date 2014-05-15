@@ -1,12 +1,12 @@
 --- Makefile.in.orig	2014-05-15 13:24:44.443654128 +0800
-+++ Makefile.in	2014-05-15 14:17:08.068862693 +0800
++++ Makefile.in	2014-05-15 15:24:21.360652386 +0800
 @@ -88,7 +88,8 @@
  		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
  		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
 -		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
 +		  extrusion-taper.c extrusion-twistoid.c graphene.c graphene_scene.c \
-+		  graphene_grid.c graphene_util.c graphene_map.c sierpinski3d.c \
++		  graphene_geometry.c graphene_util.c sierpinski3d.c \
  		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
  		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
  		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
@@ -16,7 +16,7 @@
  		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
 -		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
 +		  extrusion-taper.o extrusion-twistoid.o graphene.o graphene_scene.o \
-+		  graphene_grid.o graphene_util.o graphene_map.o sierpinski3d.o \
++		  graphene_geometry.o graphene_util.o sierpinski3d.o \
  		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
  		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
  		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
@@ -33,7 +33,7 @@
  		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
-+		  graphene_scene.h graphene_grid.h graphene_util.h graphene_map.h \
++		  graphene_scene.h graphene_geometry.h graphene_util.h \
  		  involute.h teapot.h sonar.h dropshadow.h starwars.h \
  		  jwzgles.h jwzglesI.h teapot2.h dnapizza.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
@@ -48,14 +48,14 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
  
-+GRAPHENE_OBJS=sphere.o tube.o graphene_scene.o graphene_grid.o graphene_util.o graphene_map.o $(HACK_TRACK_OBJS)
++GRAPHENE_OBJS=sphere.o tube.o graphene_scene.o graphene_geometry.o graphene_util.o $(HACK_TRACK_OBJS)
 +graphene:	graphene.o	$(GRAPHENE_OBJS)
 +	$(CC_HACK) -o $@ $@.o	$(GRAPHENE_OBJS) $(HACK_LIBS)
 +
  circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
  	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
  
-@@ -1262,6 +1269,27 @@
+@@ -1262,6 +1269,26 @@
  cubicgrid.o: $(UTILS_SRC)/yarandom.h
  cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
  cubicgrid.o: $(HACK_SRC)/xlockmore.h
@@ -67,9 +67,8 @@
 +graphene.o: $(srcdir)/sphere.h
 +graphene.o: $(srcdir)/tube.h
 +graphene.o: $(srcdir)/graphene_scene.h
-+graphene.o: $(srcdir)/graphene_grid.h
++graphene.o: $(srcdir)/graphene_geometry.h
 +graphene.o: $(srcdir)/graphene_util.h
-+graphene.o: $(srcdir)/graphene_map.h
 +graphene.o: $(UTILS_SRC)/colors.h
 +graphene.o: $(UTILS_SRC)/grabscreen.h
 +graphene.o: $(UTILS_SRC)/hsv.h
