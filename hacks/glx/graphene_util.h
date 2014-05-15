@@ -135,5 +135,13 @@ float fast_sin(float x);
 
 void init_fast_math(void);
 
+int read_atomic_value(char **pos, void *out, char type);
+int read_value(char **pos, void *out, char *type);
+int snprintf_ri(char *str, size_t size, RandInt v);
+int snprintf_rf(char *str, size_t size, RandFloat v);
+int snprintf_rv(char *str, size_t size, RandVector v);
+int snprintf_rc(char *str, size_t size, RandColor v);
+void parse_spec(char **pos, void *out, char *type, char *key, int required);
+
 #define GRAPHENE_UTIL_H
 #endif /* GRAPHENE_UTIL_H */
