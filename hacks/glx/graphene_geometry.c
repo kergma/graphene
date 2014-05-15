@@ -129,12 +129,13 @@ void map_fill_array2d(Map *m)
 
 MapCell *map_cell(Map *m, HEXCOORD cc)
 {
+	int ai;
 	if (cc.u<m->u_low) return NULL;
 	if (cc.u>m->u_high) return NULL;
 	if (cc.v<m->v_low) return NULL;
 	if (cc.v>m->v_high) return NULL;
 
-	int ai=COORD_TO_ARRAY_INDEX(cc.u,cc.v);
+	ai=COORD_TO_ARRAY_INDEX(cc.u,cc.v);
 	if (ai<0) return NULL;
 	if (ai>=(1+m->u_high-m->u_low)*(1+m->v_high-m->v_low)) return NULL;
 	return m->array2d[ai];
