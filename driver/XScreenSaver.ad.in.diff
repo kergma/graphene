@@ -1,6 +1,6 @@
---- XScreenSaver.ad.in.orig	2014-05-11 02:56:07.984983280 +0800
-+++ XScreenSaver.ad.in	2014-05-11 08:44:33.498404079 +0800
-@@ -251,6 +251,7 @@
+--- XScreenSaver.ad.in.orig	2015-10-25 01:55:33.000000000 +0700
++++ XScreenSaver.ad.in	2016-03-17 22:53:12.812729998 +0700
+@@ -253,6 +253,7 @@
  				xspirograph -root			    \n\
  @GL_KLUDGE@ GL: 				circuit -root				    \n\
  @GL_KLUDGE@ GL: 				dangerball -root			    \n\

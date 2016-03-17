@@ -1,26 +1,22 @@
---- Makefile.in.orig	2014-05-15 13:24:44.443654128 +0800
-+++ Makefile.in	2014-05-15 15:24:21.360652386 +0800
-@@ -88,7 +88,8 @@
- 		  xlock-gl-utils.c xpm-ximage.c glplanet.c pulsar.c \
+--- Makefile.in.orig	2015-10-25 02:15:00.000000000 +0700
++++ Makefile.in	2016-03-17 22:43:48.549569492 +0700
+@@ -92,6 +92,7 @@
  		  extrusion.c extrusion-helix2.c extrusion-helix3.c \
  		  extrusion-helix4.c extrusion-joinoffset.c extrusion-screw.c \
--		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
-+		  extrusion-taper.c extrusion-twistoid.c graphene.c graphene_scene.c \
-+		  graphene_geometry.c graphene_util.c sierpinski3d.c \
+ 		  extrusion-taper.c extrusion-twistoid.c sierpinski3d.c \
++		  graphene.c graphene_scene.c graphene_geometry.c graphene_util.c \
  		  gflux.c stonerview.c stonerview-move.c stonerview-osc.c \
  		  stonerview-view.c starwars.c glut_stroke.c glut_swidth.c \
  		  gltext.c molecule.c dangerball.c sphere.c tube.c circuit.c \
-@@ -127,7 +128,8 @@
- 		  xlock-gl-utils.o xpm-ximage.o glplanet.o pulsar.o \
+@@ -134,6 +135,7 @@
  		  extrusion.o extrusion-helix2.o extrusion-helix3.o \
  		  extrusion-helix4.o extrusion-joinoffset.o extrusion-screw.o \
--		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
-+		  extrusion-taper.o extrusion-twistoid.o graphene.o graphene_scene.o \
-+		  graphene_geometry.o graphene_util.o sierpinski3d.o \
+ 		  extrusion-taper.o extrusion-twistoid.o sierpinski3d.o \
++		  graphene.o graphene_scene.o graphene_geometry.o graphene_util.o  \
  		  gflux.o stonerview.o stonerview-move.o stonerview-osc.o \
  		  stonerview-view.o starwars.o glut_stroke.o glut_swidth.o \
  		  gltext.o molecule.o dangerball.o sphere.o tube.o circuit.o \
-@@ -160,7 +162,7 @@
+@@ -169,7 +171,7 @@
  GL_EXES		= cage gears moebius pipes sproingies stairs superquadrics \
  		  morph3d rubik atlantis lament bubble3d glplanet pulsar \
  		  sierpinski3d gflux stonerview starwars gltext molecule \
@@ -29,22 +25,21 @@
  		  sballs cubenetic spheremonics lavalite queens \
  		  endgame glblur flurry atunnel flyingtoasters bouncingcow \
  		  glslideshow jigglypuff klein hypertorus glmatrix cubestorm \
-@@ -202,12 +204,13 @@
- 		  tunnel_draw.h ants.h polyhedra.h normals.h glxfonts.h \
+@@ -216,11 +218,12 @@
+ 		  tunnel_draw.h ants.h polyhedra.h normals.h \
  		  texfont.h tangram_shapes.h sproingies.h extrusion.h \
  		  glschool.h glschool_gl.h glschool_alg.h topblock.h \
 +		  graphene_scene.h graphene_geometry.h graphene_util.h \
  		  involute.h teapot.h sonar.h dropshadow.h starwars.h \
- 		  jwzgles.h jwzglesI.h teapot2.h dnapizza.h
+ 		  jwzgles.h jwzglesI.h teapot2.h dnapizza.h curlicue.h
  GL_MEN		= atlantis.man boxed.man bubble3d.man cage.man circuit.man \
  		  cubenetic.man dangerball.man engine.man extrusion.man \
- 		  flipscreen3d.man gears.man gflux.man \
--		  glplanet.man glsnake.man gltext.man lament.man lavalite.man \
-+		  glplanet.man glsnake.man gltext.man graphene.man lament.man lavalite.man \
+-		  flipscreen3d.man gears.man gflux.man \
++		  flipscreen3d.man gears.man gflux.man graphene.man \
+ 		  glplanet.man glsnake.man gltext.man lament.man lavalite.man \
  		  menger.man moebius.man molecule.man morph3d.man pipes.man \
  		  pulsar.man queens.man rubik.man sballs.man sierpinski3d.man \
- 		  spheremonics.man sproingies.man stairs.man starwars.man \
-@@ -588,6 +591,10 @@
+@@ -622,6 +625,10 @@
  dangerball:	dangerball.o	$(DB_OBJS)
  	$(CC_HACK) -o $@ $@.o	$(DB_OBJS) $(HACK_LIBS)
  
@@ -52,10 +47,10 @@
 +graphene:	graphene.o	$(GRAPHENE_OBJS)
 +	$(CC_HACK) -o $@ $@.o	$(GRAPHENE_OBJS) $(HACK_LIBS)
 +
- circuit:	circuit.o	font-ximage.o $(HACK_OBJS)
- 	$(CC_HACK) -o $@ $@.o   font-ximage.o $(HACK_OBJS) $(HACK_LIBS)
+ circuit:	circuit.o	$(HACK_OBJS)
+ 	$(CC_HACK) -o $@ $@.o   $(HACK_OBJS) $(HACK_LIBS)
  
-@@ -1262,6 +1269,26 @@
+@@ -1372,6 +1379,26 @@
  cubicgrid.o: $(UTILS_SRC)/yarandom.h
  cubicgrid.o: $(HACK_SRC)/xlockmoreI.h
  cubicgrid.o: $(HACK_SRC)/xlockmore.h
