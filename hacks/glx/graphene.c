@@ -26,6 +26,8 @@
 
 Scene *scene=NULL;
 static char *cl_scene_spec;
+static char *cl_spec_dumper;
+
 
 typedef struct tagGrapheneInfo
 {
@@ -37,12 +39,14 @@ static GrapheneInfo *graphene_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
-	{ "-scene", ".scene", XrmoptionSepArg, "don't know why this field is needed" },
+	{ "-scene", ".scene", XrmoptionSepArg, NULL },
+	{ "-dump", ".dump", XrmoptionSepArg, NULL },
 };
 
 static argtype vars[] =
 {
-	{&cl_scene_spec, "scene",  "Scene specification",  "1 0x0 17 0.2 bg 1 #888 10 0 color 1 1 #fff #fff 10 0 wav 1 0 0 0 0.1 1 1 wc 1 0 0 cam 1 3 3 3 0 0 0 0 1 0 45 10 0", t_String},
+	{&cl_scene_spec, "scene",  "Scene specification",  "random", t_String},
+	{&cl_spec_dumper, "dump",  "Dump scene specification",  "none", t_String},
 };
 
 ENTRYPOINT ModeSpecOpt graphene_opts = {countof(opts), opts, countof(vars), vars, NULL};
@@ -76,6 +80,7 @@ ENTRYPOINT Bool graphene_handle_event (ModeInfo *mi, XEvent *event)
 	return False;
 }
 
+char *read_scene_spec(char *s);
 
 ENTRYPOINT void init_graphene (ModeInfo *mi)
 {
@@ -93,7 +98,9 @@ ENTRYPOINT void init_graphene (ModeInfo *mi)
 	gi->scene_spec=cl_scene_spec;
 	gi->glx_context=init_GL(mi);
 
- 	scene=scene_create(cl_scene_spec);
+	if (!strcmp(cl_spec_dumper,"minified")) spec_dumper=SD_MINIFIED;
+	if (!strcmp(cl_spec_dumper,"explained")) spec_dumper=SD_EXPLAINED;
+	scene=scene_create(read_scene_spec(cl_scene_spec));
 	start_time=current_time();
 	reshape_graphene (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
@@ -129,5 +136,29 @@ ENTRYPOINT void release_graphene (ModeInfo *mi)
 }
 
 XSCREENSAVER_MODULE ("Graphene", graphene)
+
+typedef struct tagSCENE_SPEC {
+	char *name;
+	char *spec;
+} SCENE_SPEC;
+
+
+SCENE_SPEC scenes[]={
+	{"demo", "1 0x0 17 0.2 bg 1 #888 10 0 color 1 1 #fff #fff 10 0 wav 1 0 0 0 0.1 1 1 wc 1 0 0 cam 1 3 3 3 0 0 0 0 1 0 45 10 0"},
+	{"curves","1 0x0 55 50 1 #ff000080 10 0 11 1 #ff000000 #ffffffff 10 0 2 -3000:3000, 0, -3000:3000 10 1000:2000 1:4 1 0 0 0, 0, 0 20:50 300:1000 1:5 1 0  1 8 0, 3000, 0 0, 0, 0 0, 0, 1 90 30 0 0, 3000, 0 0, 0, 0 0, 0, 1 90 1 0 0, 2000, 0 0, 0, 0 1, 0, 0 90 30 0 0, 2000, 0 0, 0, 0 1, 0, 0 90 1 0 0, 2500, 0 0, 0, 0 0, 0, 1 90 30 0 0, 2500, 0 0, 0, 0 0, 0, 1 90 1 0 1000, 2000, 0 1000, 0, 0 -1, 0, 0 90 30 0 1000, 2000, 0 1000, 0, 0 -1, 0, 0 90 1 0"},
+};
+
+char *read_scene_spec(char *s)
+{
+	int i=0;
+	printf("here %s\n",s);
+
+	if (!strcmp(s,"random")) return scenes[(sizeof(scenes)/sizeof(scenes[0]))*(long int)random()/RAND_MAX].spec;
+	for (i=0;i<sizeof(scenes)/sizeof(scenes[0]);i++)
+	{
+		if (!strcmp(scenes[i].name,s)) return scenes[i].spec;
+	};
+	return s;
+}
 
 #endif /* USE_GL */

@@ -442,6 +442,8 @@ void init_fast_math(void)
 		sin_table[i]=sinf(i*DOUBLE_PI/(float)SIN_ENTRIES);
 }
 
+SPEC_DUMPER spec_dumper=SD_NONE;
+
 int read_atomic_value(char **pos, void *out, char type)
 {
 
@@ -601,8 +603,9 @@ int snprintf_rv(char *str, size_t size, RandVector v)
 int snprintf_rc(char *str, size_t size, RandColor v)
 {
 	if (v.random)
-		return snprintf(str,size,"#%06x:#%06x",v.a,v.b);
-	return snprintf(str,size,"#%06x",v.a);
+		return snprintf(str,size,"#%06x:#%06x",COLOR_swaprb(v.a),COLOR_swaprb(v.b));
+	return snprintf(str,size,"#%06x",COLOR_swaprb(v.a));
+	return 0;
 }
 
 void parse_spec(char **pos, void *out, char *type, char *key, int required)
@@ -625,5 +628,9 @@ void parse_spec(char **pos, void *out, char *type, char *key, int required)
 	if (!strcmp(type,"v")) snprintf(buf,512,"%f, %f, %f",((VECTOR3F*)out)->x,((VECTOR3F*)out)->y,((VECTOR3F*)out)->z);
 	if (!strcmp(type,"rv")) snprintf_rv(buf,512,*((RandVector*)out));
 	if (!strcmp(type,"rc")) snprintf_rc(buf,512,*((RandColor*)out));
+	if (spec_dumper==SD_MINIFIED) printf("%s ",buf);
+	if (spec_dumper==SD_EXPLAINED) printf("%s %s ",key,buf);
+	/*
 	printf("%s: %s\n",key,buf);
+	*/
 }

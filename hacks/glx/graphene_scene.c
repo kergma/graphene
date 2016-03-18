@@ -154,6 +154,11 @@ Scene *scene_create(char *spec)
 	};
 	
 	parse_spec(&ss,&scene_name,"s","scene name",0);
+	if (spec_dumper!=SD_NONE)
+	{
+		printf("\n");
+		fflush(0);
+	};
 
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));

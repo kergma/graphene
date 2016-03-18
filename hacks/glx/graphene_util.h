@@ -135,6 +135,14 @@ float fast_sin(float x);
 
 void init_fast_math(void);
 
+typedef enum tag_SPEC_DUMPER
+{
+	SD_NONE,
+	SD_MINIFIED,
+	SD_EXPLAINED
+} SPEC_DUMPER;
+extern SPEC_DUMPER spec_dumper;
+
 int read_atomic_value(char **pos, void *out, char type);
 int read_value(char **pos, void *out, char *type);
 int snprintf_ri(char *str, size_t size, RandInt v);
