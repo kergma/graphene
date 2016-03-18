@@ -586,11 +586,21 @@ int snprintf_ri(char *str, size_t size, RandInt v)
 		return snprintf(str,size,"%d:%d",v.a,v.b);
 	return snprintf(str,size,"%d",v.a);
 }
+char *snprintf_float(char *buf, size_t size, float f);
+char *snprintf_float(char *buf, size_t size, float f)
+{
+	snprintf(buf,size,"%f",f);
+	while (strchr(buf,'.') && (buf[strlen(buf)-1]=='0' || buf[strlen(buf)-1]=='.' ))
+		buf[strlen(buf)-1]=0;
+	return buf;
+
+}
 int snprintf_rf(char *str, size_t size, RandFloat v)
 {
+	char buf1[30],buf2[30];
 	if (v.random)
-		return snprintf(str,size,"%f:%f",v.a,v.b);
-	return snprintf(str,size,"%f",v.a);
+		return snprintf(str,size,"%s:%s",snprintf_float(buf1,30,v.a),snprintf_float(buf2,30,v.b));
+	return snprintf(str,size,"%s",snprintf_float(buf1,30,v.a));
 }
 int snprintf_rv(char *str, size_t size, RandVector v)
 {
@@ -598,14 +608,36 @@ int snprintf_rv(char *str, size_t size, RandVector v)
 	snprintf_rf(x,32,v.x);
 	snprintf_rf(y,32,v.y);
 	snprintf_rf(z,32,v.z);
+	if (spec_dumper==SD_MINIFIED) return snprintf(str,size,"%s %s %s",x,y,z);
 	return snprintf(str,size,"%s, %s, %s",x,y,z);
+}
+char *snprintf_color(char *buf, size_t size, COLOR c);
+char *snprintf_color(char *buf, size_t size, COLOR c)
+{
+	c=COLOR_swaprb(c);
+	snprintf(buf,size,"#%06x",c);
+	if (strlen(buf)==7 && buf[1]==buf[2] && buf[3]==buf[4] && buf[5]==buf[6])
+	{
+		buf[2]=buf[3];
+		buf[3]=buf[5];
+		buf[4]=0;
+	};
+	if (strlen(buf)==9 && buf[1]==buf[2] && buf[3]==buf[4] && buf[5]==buf[6] && buf[7]==buf[8])
+	{
+		buf[2]=buf[3];
+		buf[3]=buf[5];
+		buf[4]=buf[7];
+		buf[5]=0;
+	};
+	return buf;
+
 }
 int snprintf_rc(char *str, size_t size, RandColor v)
 {
+	char buf1[10],buf2[10];
 	if (v.random)
-		return snprintf(str,size,"#%06x:#%06x",COLOR_swaprb(v.a),COLOR_swaprb(v.b));
-	return snprintf(str,size,"#%06x",COLOR_swaprb(v.a));
-	return 0;
+		return snprintf(str,size,"%s:%s",snprintf_color(buf1,10,v.a),snprintf_color(buf2,10,v.b));
+	return snprintf(str,size,"%s",snprintf_color(buf1,10,v.a));
 }
 
 void parse_spec(char **pos, void *out, char *type, char *key, int required)

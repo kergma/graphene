@@ -66,11 +66,14 @@ Scene *scene_create(char *spec)
 
 	parse_spec(&ss,&version,"i","version",1);
 	parse_spec(&ss,&flags,"x","flags",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 	parse_spec(&ss,&map_size,"ri","map size",1);
 	parse_spec(&ss,&cell_size,"rf","cell size",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 
 	s->bganimation.points=array_create(sizeof(BgPoint));
 	parse_spec(&ss,&bgcount,"i","bg count",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 	for (i=0;i<bgcount;i++)
 	{
 		parse_spec(&ss,&bgcolor,"rc","bgcolor",1);
@@ -78,11 +81,13 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&replicate,"ri","bgcolor replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
 			scene_add_bgcolor(s,RandColor_value(&bgcolor),RandFloat_value(&time));
+		if (spec_dumper==SD_EXPLAINED) printf("\n");
 	};
 
 	parse_spec(&ss,&contrast,"rf","grid color contrast",1);
 	colors=array_create(sizeof(ColorPoint));
 	parse_spec(&ss,&color_count,"i","grid color count",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 	for (i=0;i<color_count;i++)
 	{
 		parse_spec(&ss,&color1,"rc","grid color1",1);
@@ -96,10 +101,12 @@ Scene *scene_create(char *spec)
 			color.time=RandFloat_value(&time);
 			array_add(colors,&color);
 		};
+		if (spec_dumper==SD_EXPLAINED) printf("\n");
 	};
 
 	waves=array_create(sizeof(GRID_WAVE));
 	parse_spec(&ss,&wave_count,"i","wave count",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 	for (i=0;i<wave_count;i++)
 	{
 		parse_spec(&ss,&source,"rv","wave source",1);
@@ -134,12 +141,14 @@ Scene *scene_create(char *spec)
 			};
 			array_add(waves,&wave);
 		};
+		if (spec_dumper==SD_EXPLAINED) printf("\n");
 	};
 
 
 	s->camera=camera_create();
 
 	parse_spec(&ss,&cam_count,"i","camera count",1);
+	if (spec_dumper==SD_EXPLAINED) printf("\n");
 	for (i=0;i<cam_count;i++)
 	{
 		parse_spec(&ss,&pos,"rv","camera pos",1);
@@ -150,15 +159,11 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&replicate,"ri","camera replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
 			camera_add_point(s->camera,RandVector_value(&pos),RandVector_value(&target),RandVector_value(&up),RandFloat_value(&fov),RandFloat_value(&time));
-
+		if (spec_dumper==SD_EXPLAINED) printf("\n");
 	};
 	
-	parse_spec(&ss,&scene_name,"s","scene name",0);
-	if (spec_dumper!=SD_NONE)
-	{
-		printf("\n");
-		fflush(0);
-	};
+	if (spec_dumper==SD_MINIFIED) printf("\n");
+	if (spec_dumper!=SD_NONE) fflush(0);
 
 	s->map=map_create();
 	map_create_hex(s->map,RandInt_value(&map_size));
