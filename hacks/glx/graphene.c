@@ -27,6 +27,7 @@
 Scene *scene=NULL;
 static char *cl_scene_spec;
 static char *cl_spec_dumper;
+static int cl_do_list;
 
 
 typedef struct tagGrapheneInfo
@@ -39,12 +40,14 @@ static GrapheneInfo *graphene_info=NULL;
 
 static XrmOptionDescRec opts[] =
 {
+	{ "-list", ".list", XrmoptionNoArg, "True" },
 	{ "-scene", ".scene", XrmoptionSepArg, NULL },
 	{ "-dump", ".dump", XrmoptionSepArg, NULL },
 };
 
 static argtype vars[] =
 {
+	{&cl_do_list, "list",  "List embedded scenes",  "False", t_Bool},
 	{&cl_scene_spec, "scene",  "Scene specification",  "random", t_String},
 	{&cl_spec_dumper, "dump",  "Dump scene specification",  "none", t_String},
 };
@@ -80,12 +83,19 @@ ENTRYPOINT Bool graphene_handle_event (ModeInfo *mi, XEvent *event)
 	return False;
 }
 
-char *read_scene_spec(char *s);
+char *read_scene_spec(char *s, char **n);
+void list_scenes(void);
 
 ENTRYPOINT void init_graphene (ModeInfo *mi)
 {
 
 	GrapheneInfo *gi;
+	char *scname=NULL;
+	if (cl_do_list)
+	{
+		list_scenes();
+		exit(0);
+	};
 	
 	if (graphene_info==NULL)
 	{
@@ -100,7 +110,8 @@ ENTRYPOINT void init_graphene (ModeInfo *mi)
 
 	if (!strcmp(cl_spec_dumper,"minified")) spec_dumper=SD_MINIFIED;
 	if (!strcmp(cl_spec_dumper,"explained")) spec_dumper=SD_EXPLAINED;
-	scene=scene_create(read_scene_spec(cl_scene_spec));
+	scene=scene_create(read_scene_spec(cl_scene_spec,&scname));
+	if (spec_dumper==SD_EXPLAINED && scname!=NULL) printf("scene name %s\n",scname);
 	start_time=current_time();
 	reshape_graphene (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
@@ -213,16 +224,33 @@ SCENE_SPEC scenes[]={
 	{"water", "1 0x2 48 50 1 #ff404040 5 0 1 1 #ff6c6c6c #ffc0c0c0 5 0 2 -10000:10000 0 -10000:10000 10:35 200:900 1:20 1 0 0 0 0 0 20:50 300:1000 1:5 1 0 1 4 -3000 500 0 0 200 0 0 1 0 90 60 0 0 500 -3000 0 200 0 0 1 0 90 60 0 3000 500 0 0 200 0 0 1 0 90 60 0 0 500 3000 0 200 0 0 1 0 90 60 0"},
 };
 
-char *read_scene_spec(char *s)
+char *read_scene_spec(char *s, char **n)
 {
 	int i=0;
 
-	if (!strcmp(s,"random")) return scenes[(sizeof(scenes)/sizeof(scenes[0]))*(long int)random()/RAND_MAX].spec;
+	if (!strcmp(s,"random"))
+	{
+		i=(sizeof(scenes)/sizeof(scenes[0]))*(long int)random()/RAND_MAX;
+		if (n) *n=scenes[i].name;
+		return scenes[i].spec;
+	};
+
 	for (i=0;i<sizeof(scenes)/sizeof(scenes[0]);i++)
 	{
-		if (!strcmp(scenes[i].name,s)) return scenes[i].spec;
+		if (strcmp(scenes[i].name,s)) continue;
+		if (n) *n=scenes[i].name;
+		return scenes[i].spec;
 	};
 	return s;
+}
+
+void list_scenes(void)
+{
+	int i=0;
+	for (i=0;i<sizeof(scenes)/sizeof(scenes[0]);i++)
+	{
+		printf("%s\n",scenes[i].name);
+	};
 }
 
 #endif /* USE_GL */
