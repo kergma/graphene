@@ -13,6 +13,9 @@ typedef struct tagMapCell {
 
 extern HEXCOORD hex_direction[];
 
+VECTOR3F *hex2rect(float cell_size, VECTOR3F *pointxz, HEXCOORD cc);
+HEXCOORD *rect2hex(float cell_size, HEXCOORD *cc, VECTOR3F pointxz);
+
 typedef struct tagMap {
 	Array *cells;
 	MapCell **array2d;
@@ -24,6 +27,7 @@ Map *map_create(void);
 void map_free(Map *m);
 
 void map_create_hex(Map *m, int size);
+void map_create_rect(Map *m, VECTOR3F *clip_rect, float cell_size);
 void map_fill_array2d(Map *m);
 
 void map_add_cell(Map *m, MapCell *c);
@@ -75,7 +79,6 @@ extern int grid_render(Grid *g);
 Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float contrast);
 int grid_free(Grid *g);
 void grid_clear(Grid *g);
-VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc);
 void grid_animate(Grid *g, float delta);
 
 #define GRAPHENE_GEOMETRY_H

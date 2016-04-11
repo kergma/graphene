@@ -91,6 +91,37 @@ void map_create_hex(Map *m, int size)
 	};
 	map_fill_array2d(m);
 }
+void map_create_rect(Map *m, VECTOR3F *clip_rect, float cell_size)
+{
+	MapCell *cell;
+	int i,j,a,b;
+	HEXCOORD h1,h2,h3,d;
+
+	rect2hex(cell_size,&h1,clip_rect[0]);
+	rect2hex(cell_size,&h2,VECTOR3F_c(clip_rect[0].x,0,clip_rect[1].z));
+	rect2hex(cell_size,&h3,VECTOR3F_c(clip_rect[1].x,0,clip_rect[0].z));
+
+	b=h3.u-h1.u+1;
+	a=h2.v-h1.v+1;
+
+	d=hex_direction[3];
+	for (i=0;i<a;i++)
+	{
+		h2=h1;
+		for (j=0;j<b;j++)
+		{
+			cell=NEW(MapCell);
+			memset(cell,0,sizeof(*cell));
+			cell->Coord=h2;
+			array_add(m->cells,&cell);
+			h2=HEXCOORD_add(h2,hex_direction[1]);
+		};
+		h1=HEXCOORD_add(h1,d);
+		d=HEXCOORD_add(HEXCOORD_c(-1,2,-1),HEXCOORD_mulint(d,-1));
+	};
+
+	map_fill_array2d(m);
+}
 
 /* macro to be used inside Map "members" with Map referenced as m */
 #define COORD_TO_ARRAY_INDEX(c1,c2) ((c2-m->v_low)*m->u_width+(c1-m->u_low))
@@ -182,15 +213,51 @@ void add_vertex(Array *a, float x, float y, float z, GLuint c)
 	array_add(a,&v);
 }
 
-VECTOR3F *grid_hex2rect(Grid *g, VECTOR3F *pointxz, HEXCOORD cc)
+VECTOR3F *hex2rect(float cell_size, VECTOR3F *pointxz, HEXCOORD cc)
 {
-	float hex_delta=2*g->cell_size*COS30;
+	float hex_delta=2*cell_size*COS30;
 
 	*pointxz=VECTOR3F_c((float)cc.u,(float)cc.v,(float)cc.f);
 	*pointxz=VECTOR3F_mulfloat(*pointxz,hex_delta);
 	HEXTOXZ(*pointxz);
 
 	return pointxz;
+}
+
+HEXCOORD *rect2hex(float cell_size, HEXCOORD *cc, VECTOR3F pointxz)
+{
+	VECTOR3F tmp;
+	float hex_delta=2*cell_size*COS30;
+	float dx,dy,dz;
+
+	pointxz.x/=hex_delta;
+	pointxz.z/=hex_delta;
+
+	tmp.x=COS30*pointxz.x-SIN30*pointxz.z;
+	tmp.y=pointxz.z;
+	tmp.z=-SIN30*pointxz.z-COS30*pointxz.x;
+
+	dx=fast_abs(tmp.x-ROUND(tmp.x));
+	dy=fast_abs(tmp.y-ROUND(tmp.y));
+	dz=fast_abs(tmp.z-ROUND(tmp.z));
+
+	cc->u=fast_round(tmp.x);
+	cc->v=fast_round(tmp.y);
+	cc->f=fast_round(tmp.z);
+
+	if (dx>dy && dx>dz)
+	{
+		cc->u=-cc->v-cc->f;
+	}
+	else if (dy>dx && dy>dz)
+	{
+		cc->v=-cc->u-cc->f;
+	}
+	else
+	{
+		cc->f=-cc->u-cc->v;
+	};
+	return cc;
 }
 
 HEXAGON_VERTEX *get_vertex(HEXAGON_VERTEX v, HEXAGON_EDGE *e1, HEXAGON_EDGE *e2);
@@ -279,7 +346,7 @@ Grid *grid_create(Map *map, float cell_size, Array *waves, Array *colors, float 
 	{
 		/* take next cell */
 		array_item(g->map->cells,i,&cell);
-		grid_hex2rect(g,&cell_coord,cell->Coord);
+		hex2rect(g->cell_size,&cell_coord,cell->Coord);
 		/* loop througg its edges */
 		for (e=0;e<6;e++)
 		{

@@ -27,6 +27,7 @@ void camera_set_viewport(Camera *c, int width, int height);
 void camera_animate_hermite(Camera *c, float delta);
 void camera_animate(Camera *c, float delta);
 void camera_render(Camera *c);
+void camera_calculate_cliprect(Camera *c, VECTOR3F *clip_rect);
 
 typedef struct tagBgPoint
 {

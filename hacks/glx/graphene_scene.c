@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+#include "config.h"
 #endif
 
 #ifdef HAVE_COCOA
@@ -31,7 +31,6 @@ void scene_add_bgcolor(Scene *s, unsigned int bgcolor, float time)
 	array_add(s->bganimation.points,&bg);
 }
 
-
 #define SF_STATIC 0x1
 #define SF_PLAIN 0x2
 Scene *scene_create(char *spec)
@@ -41,7 +40,10 @@ Scene *scene_create(char *spec)
 	int version=1;
 	unsigned int flags;
 	RandInt map_size;
+	int _map_size;
 	RandFloat cell_size;
+	float _cell_size;
+	VECTOR3F clip_rect[2];
 	int bgcount;
 	RandColor bgcolor;
 	int wave_count,i,j,k;
@@ -166,9 +168,17 @@ Scene *scene_create(char *spec)
 	if (spec_dumper!=SD_NONE) fflush(0);
 
 	s->map=map_create();
-	map_create_hex(s->map,RandInt_value(&map_size));
+	_map_size=RandInt_value(&map_size);
+	_cell_size=RandFloat_value(&cell_size);
+	if (_map_size>0)
+		map_create_hex(s->map,_map_size);
+	else if (_map_size==0)
+	{
+		camera_calculate_cliprect(s->camera,clip_rect);
+		map_create_rect(s->map,clip_rect,_cell_size);
+	};
 
-	s->grid=grid_create(s->map,RandFloat_value(&cell_size),waves,colors,RandFloat_value(&contrast));
+	s->grid=grid_create(s->map,_cell_size,waves,colors,RandFloat_value(&contrast));
 	free(scene_name);
 	
 	array_free(colors);
@@ -324,4 +334,50 @@ void camera_render(Camera *c)
 	glLoadIdentity();
 	gluPerspective(c->fov,c->aspect,1,1e35f);
 
+}
+
+void screen_to_xz(GLdouble wx, GLdouble wy, const GLdouble *model, const GLdouble *proj, const GLint *view, float *x, float *z);
+void screen_to_xz(GLdouble wx, GLdouble wy, const GLdouble *model, const GLdouble *proj, const GLint *view, float *x, float *z)
+{
+	GLdouble x1,y1,z1, x2,y2,z2;
+	gluUnProject(wx,wy,100000,model,proj,view,&x1,&y1,&z1);
+	gluUnProject(wx,wy,-100000,model,proj,view,&x2,&y2,&z2);
+	*x=x1-y1*(x2-x1)/(y2-y1);
+	*z=z1-y1*(z2-z1)/(y2-y1);
+}
+
+#define MIN(a,b) ((a)<(b)?(a):(b))
+#define MAX(a,b) ((a)>(b)?(a):(b))
+void camera_calculate_cliprect(Camera *c, VECTOR3F *clip_rect)
+{
+	int i;
+	CamPoint p;
+	GLint view[4];
+	GLdouble proj[16], model[16];
+	float x,z;
+	glGetIntegerv(GL_VIEWPORT,view);
+	camera_set_viewport(c,view[2]-view[0],view[3]-view[1]);
+	for (i=0;i<array_count(c->points);i++)
+	{
+		array_item(c->points,i,&p);
+		c->pos=p.pos;
+		c->target=p.target;
+		c->up=p.up;
+		c->fov=p.fov;
+		camera_render(c);
+		glGetDoublev(GL_PROJECTION_MATRIX,proj);
+		glGetDoublev(GL_MODELVIEW_MATRIX,model);
+		screen_to_xz(view[0],view[1],model,proj,view,&x,&z);
+		clip_rect[0].x=MIN(x,clip_rect[0].x); clip_rect[0].z=MIN(z,clip_rect[0].z);
+		clip_rect[1].x=MAX(x,clip_rect[1].x); clip_rect[1].z=MAX(z,clip_rect[1].z);
+		screen_to_xz(view[0],view[3],model,proj,view,&x,&z);
+		clip_rect[0].x=MIN(x,clip_rect[0].x); clip_rect[0].z=MIN(z,clip_rect[0].z);
+		clip_rect[1].x=MAX(x,clip_rect[1].x); clip_rect[1].z=MAX(z,clip_rect[1].z);
+		screen_to_xz(view[2],view[3],model,proj,view,&x,&z);
+		clip_rect[0].x=MIN(x,clip_rect[0].x); clip_rect[0].z=MIN(z,clip_rect[0].z);
+		clip_rect[1].x=MAX(x,clip_rect[1].x); clip_rect[1].z=MAX(z,clip_rect[1].z);
+		screen_to_xz(view[2],view[1],model,proj,view,&x,&z);
+		clip_rect[0].x=MIN(x,clip_rect[0].x); clip_rect[0].z=MIN(z,clip_rect[0].z);
+		clip_rect[1].x=MAX(x,clip_rect[1].x); clip_rect[1].z=MAX(z,clip_rect[1].z);
+	};
 }
