@@ -46,10 +46,10 @@ Scene *scene_create(char *spec)
 	VECTOR3F clip_rect[2];
 	int bgcount;
 	RandColor bgcolor;
-	int wave_count,i,j,k;
+	int wave_count,i,j;
 	RandVector source;
 	RandFloat amplitude, length, period;
-	RandInt replicate,wave_color_replicate;
+	RandInt replicate;
 	Array *waves;
 	GRID_WAVE wave;
 	int cam_count=0;
@@ -57,7 +57,7 @@ Scene *scene_create(char *spec)
 	RandFloat fov,time;
 	int color_count;
 	Array *colors;
-	RandFloat contrast,wave_contrast;
+	RandFloat contrast;
 	RandColor color1,color2;
 	ColorPoint color;
 
@@ -115,15 +115,6 @@ Scene *scene_create(char *spec)
 		parse_spec(&ss,&amplitude,"rf","wave amplitude",1);
 		parse_spec(&ss,&length,"rf","wave length",1);
 		parse_spec(&ss,&period,"rf","wave period",1);
-		parse_spec(&ss,&wave_contrast,"rf","wave color contrast",1);
-		parse_spec(&ss,&color_count,"i","wave color count",1);
-		for (j=0;j<color_count;j++)
-		{
-			parse_spec(&ss,&color1,"rc","wave color1",1);
-			parse_spec(&ss,&color2,"rc","wave color2",1);
-			parse_spec(&ss,&time,"rf","wave color time",1);
-			parse_spec(&ss,&wave_color_replicate,"ri","wave color replicate",1);
-		};
 		parse_spec(&ss,&replicate,"ri","wave replicate",1);
 		for (j=0;j<RandInt_value(&replicate)+1;j++)
 		{
@@ -132,15 +123,6 @@ Scene *scene_create(char *spec)
 			wave.amplitude=RandFloat_value(&amplitude);
 			wave.length=RandFloat_value(&length);
 			wave.period=RandFloat_value(&period);
-			wave.contrast=RandFloat_value(&wave_contrast);
-			wave.color_animation.points=array_create(sizeof(ColorPoint));
-			for (k=0;k<RandInt_value(&wave_color_replicate)+1;k++)
-			{
-				color.color1=RandColor_value(&color1);
-				color.color2=RandColor_value(&color2);
-				color.time=RandFloat_value(&time);
-				array_add(wave.color_animation.points,&color);
-			};
 			array_add(waves,&wave);
 		};
 		if (spec_dumper==SD_EXPLAINED) printf("\n");

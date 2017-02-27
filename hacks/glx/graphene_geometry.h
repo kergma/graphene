@@ -53,7 +53,6 @@ typedef struct tagGRID_WAVE
 	float amplitude;
 	float length;
 	float period;
-	WayAnimation color_animation;
 	float contrast;
 	CIT_EL *cit;
 	COLOR color1, color2;
