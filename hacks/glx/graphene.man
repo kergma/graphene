@@ -1,21 +1,18 @@
 .TH XScreenSaver 1 "" "X Version 11"
 .SH NAME
-dangerball - a 3D ball that periodically extrudes spikes. Ouch!
+graphene - interfering coloured waves on hexagonal grid
 .SH SYNOPSIS
-.B dangerball
+.B graphene
 [\-display \fIhost:display.screen\fP]
 [\-visual \fIvisual\fP]
 [\-window]
 [\-root]
-[\-delay \fInumber\fP]
-[\-speed \fInumber\fP]
-[\-count \fInumber\fP]
-[\-no-wander]
-[\-no-spin]
-[\-wireframe]
+[\-list]
+[\-scene \fIstring\fP]
+[\-dump \fImode\fP]
 [\-fps]
 .SH DESCRIPTION
-Draws a ball that periodically extrudes many random spikes. Ouch!
+Draws an animated scene of coloured waves on hexagonal grid
 .SH OPTIONS
 .TP 8
 .B \-visual \fIvisual\fP
@@ -28,26 +25,17 @@ Draw on a newly-created window.  This is the default.
 .B \-root
 Draw on the root window.
 .TP 8
-.B \-delay \fInumber\fP
-Per-frame delay, in microseconds.  Default: 30000 (0.03 seconds.).
+.B \-list
+Print a list of embedded scenes names and exit
 .TP 8
-.B \-speed \fInumber\fP
-Spike growth frequency.  0.0 - 0.25.  Default: 0.05.
+.B \-scene \fIstring\fP
+Either the name of embedded scene or the full definition of arbitrary scene to display
 .TP 8
-.B \-count \fInumber\fP
-Number o spikes.  Default: 30.
-.TP 8
-.B \-wander | \-no-wander
-Whether the object should wander around the screen.
-.TP 8
-.B \-spin | \-no-spin
-Whether the object should spin.
-.TP 8
-.B \-wireframe | \-no-wireframe
-Render in wireframe instead of solid.
+.B \-dump \fImode\fP
+Print the scene definition in one of "minified" or "explained" modes
 .TP 8
 .B \-fps
-Display the current frame rate, CPU load, and polygon count.
+Display the current frame rate and CPU load
 .SH ENVIRONMENT
 .PP
 .TP 8
@@ -61,12 +49,13 @@ stored in the RESOURCE_MANAGER property.
 .BR X (1),
 .BR xscreensaver (1)
 .SH COPYRIGHT
-Copyright \(co 2002 by Jamie Zawinski.  Permission to use, copy, modify, 
-distribute, and sell this software and its documentation for any purpose is 
-hereby granted without fee, provided that the above copyright notice appear 
-in all copies and that both that copyright notice and this permission notice
-appear in supporting documentation.  No representations are made about the 
-suitability of this software for any purpose.  It is provided "as is" without
-express or implied warranty.
+Copyright \(co 2006-2017 by Sergey Pushkin.  Permission to use, copy,
+modify, distribute, and sell this software and its documentation for
+any purpose is hereby granted without fee, provided that the above
+copyright notice appear in all copies and that both that copyright
+notice and this permission notice appear in supporting documentation.
+No representations are made about the suitability of this software for
+any purpose.  It is provided "as is" without express or implied
+warranty.
 .SH AUTHOR
-Jamie Zawinski.
+Sergey Pushkin <pushkinsv@gmail.com>, 26-Feb-2017
