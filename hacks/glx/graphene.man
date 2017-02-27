@@ -10,6 +10,7 @@ graphene - interfering coloured waves on hexagonal grid
 [\-list]
 [\-scene \fIstring\fP]
 [\-dump \fImode\fP]
+[\-exit]
 [\-fps]
 .SH DESCRIPTION
 Draws an animated scene of coloured waves on hexagonal grid
@@ -33,6 +34,9 @@ Either the name of embedded scene or the full definition of arbitrary scene to d
 .TP 8
 .B \-dump \fImode\fP
 Print the scene definition in one of "minified" or "explained" modes
+.TP 8
+.B \-exit
+Exits after the scene is read and (possibly) dumped
 .TP 8
 .B \-fps
 Display the current frame rate and CPU load
@@ -58,4 +62,4 @@ No representations are made about the suitability of this software for
 any purpose.  It is provided "as is" without express or implied
 warranty.
 .SH AUTHOR
-Sergey Pushkin <pushkinsv@gmail.com>, 26-Feb-2017
+Sergey Pushkin <pushkinsv@gmail.com>, 28-Feb-2017

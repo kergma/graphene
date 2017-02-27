@@ -25,6 +25,7 @@ Scene *scene=NULL;
 static char *cl_scene_spec;
 static char *cl_spec_dumper;
 static int cl_do_list;
+static int cl_do_exit;
 
 
 typedef struct tagGrapheneInfo
@@ -40,6 +41,7 @@ static XrmOptionDescRec opts[] =
 	{ "-list", ".list", XrmoptionNoArg, "True" },
 	{ "-scene", ".scene", XrmoptionSepArg, NULL },
 	{ "-dump", ".dump", XrmoptionSepArg, NULL },
+	{ "-exit", ".exit", XrmoptionNoArg, "True" },
 };
 
 static argtype vars[] =
@@ -47,6 +49,7 @@ static argtype vars[] =
 	{&cl_do_list, "list",  "List embedded scenes",  "False", t_Bool},
 	{&cl_scene_spec, "scene",  "Scene specification",  "random", t_String},
 	{&cl_spec_dumper, "dump",  "Dump scene specification",  "none", t_String},
+	{&cl_do_exit, "exit",  "Exit after scene dump",  "False", t_Bool},
 };
 
 ENTRYPOINT ModeSpecOpt graphene_opts = {countof(opts), opts, countof(vars), vars, NULL};
@@ -110,6 +113,10 @@ ENTRYPOINT void init_graphene (ModeInfo *mi)
 	scene=scene_create(read_scene_spec(cl_scene_spec,&scname));
 	if (spec_dumper==SD_EXPLAINED && scname!=NULL) printf("scene name %s\n",scname);
 	start_time=current_time();
+	if (cl_do_exit)
+	{
+		exit(0);
+	};
 	reshape_graphene (mi, MI_WIDTH(mi), MI_HEIGHT(mi));
 }
 
